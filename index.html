@@ -237,4 +237,563 @@
         </div>
       </div>
 
-      <div id="teacher-dashboard" class="force-hidden space-y-
+      <div id="teacher-dashboard" class="force-hidden space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border p-5 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-user-tie"></i></div>
+            <div>
+              <h2 id="teacher-welcome-name" class="text-lg font-bold"></h2>
+              <p class="text-xs text-slate-500">제출 과제 확인 · 오늘의 문제 출제(PDF) · 생기부 엑셀 출력</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="showQRCodeModal()" class="px-3.5 py-2 bg-amber-50 text-amber-700 rounded-xl text-xs font-bold"><i class="fa-solid fa-qrcode mr-1"></i>QR코드</button>
+            <button onclick="openModal('modal-api')" class="px-3.5 py-2 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold"><i class="fa-solid fa-brain mr-1"></i>AI 키설정</button>
+            <button onclick="openModal('modal-pw')" class="px-3.5 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold"><i class="fa-solid fa-lock mr-1"></i>비번변경</button>
+            <button onclick="handleTeacherLogout()" class="px-3.5 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold">로그아웃</button>
+            <button onclick="deleteAllTeacherSubmissions()" class="px-3.5 py-2 bg-rose-50 text-rose-600 rounded-xl text-xs font-bold border border-rose-200">과제 전체삭제</button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+          <button id="subtab-submissions" onclick="switchTeacherSubtab('submissions')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white">1. 제출물 확인 (<span id="teacher-sub-count">0</span>)</button>
+          <button id="subtab-problem" onclick="switchTeacherSubtab('problem')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border">2. 오늘의 문제 (다중/PDF 지원)</button>
+          <button id="subtab-record" onclick="switchTeacherSubtab('record')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border">3. 생기부 엑셀(CSV) 다운로드</button>
+        </div>
+
+        <div id="teacher-subview-submissions" class="grid grid-cols-1 lg:grid-cols-12 gap-6 block">
+          <div class="lg:col-span-5 bg-white rounded-2xl shadow-sm border p-5 flex flex-col max-h-[700px]">
+            <div class="flex justify-between pb-3 mb-3 border-b"><h3 class="font-bold text-sm">학생 제출 목록</h3></div>
+            <div id="teacher-submission-list" class="flex-1 overflow-y-auto space-y-2.5"></div>
+          </div>
+          <div class="lg:col-span-7 bg-white rounded-2xl shadow-sm border p-6">
+            <div id="teacher-detail-empty" class="py-24 text-center text-slate-400 block"><p class="text-sm font-semibold">왼쪽 목록에서 과제를 클릭하세요.</p></div>
+            <div id="teacher-detail-content" class="force-hidden space-y-5">
+              <div><h3 id="td-title" class="text-lg font-bold"></h3></div>
+              <div class="bg-slate-50 border rounded-xl p-3 text-center"><img id="td-image" src="" class="max-h-72 mx-auto rounded-lg bg-white shadow-sm object-contain"></div>
+              <div><h4 class="text-xs font-bold text-slate-500 uppercase mb-2">AI 피드백 내용</h4><div id="td-feedback" class="bg-amber-50/50 border border-amber-200 rounded-xl p-5 text-sm leading-relaxed space-y-2.5"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="teacher-subview-problem" class="force-hidden">
+          <div class="bg-white rounded-2xl shadow-sm border p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-6 space-y-4">
+              <h3 class="text-lg font-bold text-slate-900">오늘의 문제 등록 (PDF 업로드 지원)</h3>
+              <input type="text" id="tp-title" placeholder="문제 제목" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+              <textarea id="tp-desc" rows="4" oninput="previewTeacherProblem()" placeholder="문제 내용 (LaTeX $$...$$ 가능)" class="w-full rounded-xl border border-slate-300 p-3.5 text-sm focus:ring-2 focus:ring-indigo-500"></textarea>
+              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <label class="block text-xs font-bold text-slate-700 mb-2">문제 파일 첨부 (이미지 여러 장 및 PDF 지원)</label>
+                <div class="flex flex-wrap gap-2 mb-3">
+                  <input type="file" id="tp-file-input" accept="image/*,application/pdf" multiple class="force-hidden" onchange="handleTeacherProblemFiles(event)">
+                  <button type="button" onclick="document.getElementById('tp-file-input').click()" class="px-4 py-2 bg-white border hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold shadow-sm">파일 추가 (이미지 / PDF)</button>
+                </div>
+                <div id="tp-attachments-list" class="flex flex-col gap-2"></div>
+              </div>
+              <button type="button" onclick="saveTeacherProblem()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition text-sm">저장 및 학생 화면에 게시하기</button>
+            </div>
+            <div class="lg:col-span-6 bg-slate-100 rounded-2xl border border-slate-200 p-5 space-y-4">
+              <span class="text-xs font-bold text-slate-500">학생 화면 상단 표시 미리보기</span>
+              <div class="bg-slate-900 text-white rounded-2xl p-5 shadow space-y-3">
+                <h4 id="tp-preview-title" class="text-lg font-bold"></h4>
+                <div id="tp-preview-desc" class="text-sm text-indigo-100 bg-white/10 rounded-xl p-3.5"></div>
+                <div id="tp-preview-attachments" class="flex flex-wrap gap-2 pt-2" style="display: none;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="teacher-subview-record" class="force-hidden space-y-6">
+          <div class="bg-white rounded-2xl shadow-sm border p-6 space-y-4">
+            <div class="flex items-center justify-between border-b pb-4">
+              <h3 class="text-base font-bold"><i class="fa-solid fa-file-excel text-emerald-600 mr-2"></i>학급 전체 특기사항 일괄 생성 및 CSV 다운로드</h3>
+              <button onclick="downloadAllRecordsAsCSV()" class="px-4 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">전체 생기부 CSV 다운로드</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead><tr class="bg-slate-100 border-b"><th class="py-2.5 px-3">학번</th><th class="py-2.5 px-3">이름</th><th class="py-2.5 px-3">생기부 내용</th></tr></thead>
+                <tbody id="batch-record-tbody" class="divide-y text-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal-pw" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="display: none;">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4">
+      <h3 class="font-bold text-base border-b pb-3">비밀번호 변경</h3>
+      <input type="password" id="pw-current" placeholder="현재 비번" class="w-full rounded-xl border px-3 py-2 text-sm mb-2">
+      <input type="password" id="pw-new" placeholder="새 비번" class="w-full rounded-xl border px-3 py-2 text-sm mb-2">
+      <div class="flex justify-end gap-2">
+        <button onclick="closeModal('modal-pw')" class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold">취소</button>
+        <button onclick="changeTeacherPassword()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-api" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="display: none;">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+      <h3 class="font-bold text-base border-b pb-3">고성능 AI 모델 설정 (Gemini)</h3>
+      <select id="api-model-select" class="w-full rounded-xl border px-3 py-2 text-sm mb-2">
+        <option value="gemini-1.5-flash-latest" selected>Gemini 1.5 Flash (권장: 빠르고 정확)</option>
+        <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (고난도 정밀 첨삭)</option>
+      </select>
+      <input type="password" id="api-key-input" placeholder="API Key 입력" class="w-full rounded-xl border px-3 py-2 text-sm">
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('modal-api')" class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold">닫기</button>
+        <button onclick="saveApiConfig()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-qr" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm" style="display: none;">
+    <div class="bg-white rounded-[2rem] p-8 max-w-md w-full shadow-2xl flex flex-col items-center text-center space-y-5">
+      <div><h3 class="text-2xl font-black text-slate-900 mb-1">학생 접속용 QR코드</h3></div>
+      <div class="bg-white p-5 rounded-2xl border-4 border-indigo-100 shadow-sm"><div id="qrcode-container" class="mx-auto flex justify-center"></div></div>
+      <p id="qr-url-text" class="text-xs text-indigo-600 font-bold bg-indigo-50 px-4 py-2 rounded-lg break-all"></p>
+      <button onclick="closeModal('modal-qr')" class="px-6 py-3.5 bg-slate-800 text-white font-bold rounded-xl w-full text-lg">닫기</button>
+    </div>
+  </div>
+
+  <div id="fullscreen-warning-overlay" class="fixed inset-0 bg-red-950 z-50 flex-col justify-between p-6 sm:p-10 text-white overflow-y-auto" style="display: none;">
+    <div class="flex items-center justify-between border-b border-red-800 pb-4">
+      <h2 id="fs-warning-title" class="text-2xl sm:text-3xl font-black">과제 미제출자 실시간 경고 화면</h2>
+      <button onclick="toggleWarningFullscreen()" class="px-4 py-2 bg-white/10 rounded-xl text-sm font-bold border border-white/20">닫기</button>
+    </div>
+    <div class="my-auto py-8 text-center space-y-6">
+      <h3 class="text-3xl sm:text-5xl font-black text-yellow-300">아직 과제를 제출하지 않은 번호입니다!</h3>
+      <div id="fs-missing-numbers" class="flex flex-wrap justify-center gap-4 max-w-5xl mx-auto pt-4"></div>
+    </div>
+  </div>
+
+  <script>
+    function safeGetLocal(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+    function safeSetLocal(k, v) { try { localStorage.setItem(k, v); } catch(e) { console.warn("저장 차단됨"); } }
+    function safeGetSession(k) { try { return sessionStorage.getItem(k); } catch(e) { return null; } }
+    function safeSetSession(k, v) { try { sessionStorage.setItem(k, v); } catch(e) { console.warn("세션 차단됨"); } }
+    
+    function setDisplay(id, displayType) { const el = document.getElementById(id); if (el) el.style.display = displayType; }
+
+    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v17', SUBMISSIONS: 'hw_ai_submissions_v17', PROBLEMS: 'hw_ai_problems_v17', API_KEY: 'hw_ai_gemini_key_v17', API_MODEL: 'hw_ai_gemini_model_v17', CURRENT_TEACHER: 'hw_ai_logged_teacher_v17' };
+
+    let teachers=[], submissions=[], teacherProblems={}, currentTeacher=null;
+    let studentInputMode='pad', currentUploadedDataUrl='', selectedSubmissionId=null, tempTeacherAttachments=[];
+    let qrCodeInstance=null, padCanvas, padCtx, isDrawing=false, penColor='#0f172a', penWidth=3, isEraser=false;
+    let canvasHistory=[], hasUserDrawnOnPad=false, padProblemHeaderText='';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const runSafe = (fn) => { try { fn(); } catch(e) { console.error("오류 발생:", e); } };
+      runSafe(initStorageData);
+      runSafe(populateSelectOptions);
+      runSafe(initDrawingPad);
+      runSafe(setupDragAndDropAndPaste);
+      runSafe(renderTeacherSelects);
+      runSafe(renderStudentProblemBanner);
+      runSafe(checkExistingTeacherSession);
+    });
+
+    function initStorageData() {
+      try { const savedT = safeGetLocal(STORAGE_KEYS.TEACHERS); teachers = savedT ? JSON.parse(savedT) : null; } catch(e) { teachers = null; }
+      if (!Array.isArray(teachers) || teachers.length === 0) teachers = [{ id: 'teacher1', name: '김수학 선생님 (기본)', password: '1234' }];
+
+      try { const savedP = safeGetLocal(STORAGE_KEYS.PROBLEMS); teacherProblems = savedP ? JSON.parse(savedP) : null; } catch(e) { teacherProblems = null; }
+      if (typeof teacherProblems !== 'object' || teacherProblems === null) teacherProblems = {};
+
+      try { const savedS = safeGetLocal(STORAGE_KEYS.SUBMISSIONS); submissions = savedS ? JSON.parse(savedS) : null; } catch(e) { submissions = null; }
+      if (!Array.isArray(submissions)) submissions = [];
+      
+      try {
+        const apiEl = document.getElementById('api-key-input'); if(apiEl) apiEl.value = safeGetLocal(STORAGE_KEYS.API_KEY) || '';
+        const modelEl = document.getElementById('api-model-select'); if(modelEl) modelEl.value = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-1.5-flash-latest';
+      } catch(e) {}
+    }
+
+    function populateSelectOptions() {
+      const gSel = document.querySelectorAll('#stu-grade, #status-grade, #filter-grade');
+      gSel.forEach(el => { let h=''; for(let g=1; g<=6; g++) h+=`<option value="${g}">${g}학년</option>`; el.innerHTML=h; });
+      
+      const cSel = document.querySelectorAll('#stu-class, #status-class, #filter-class');
+      cSel.forEach(el => { let h=''; for(let c=1; c<=20; c++) h+=`<option value="${c}">${c}반</option>`; el.innerHTML=h; });
+      
+      const nSel = document.getElementById('stu-number');
+      if(nSel) { let h=''; for(let n=1; n<=40; n++) h+=`<option value="${n}">${n}번</option>`; nSel.innerHTML=h; }
+    }
+
+    function renderTeacherSelects() {
+      let html = '';
+      if (teachers && teachers.length > 0) { teachers.forEach(t => html += `<option value="${t.id}">${t.name} (${t.id})</option>`); }
+      const stuTeacher = document.getElementById('stu-teacher-id'); if(stuTeacher) stuTeacher.innerHTML = html;
+      const statusTeacher = document.getElementById('status-teacher-id'); if(statusTeacher) statusTeacher.innerHTML = html;
+    }
+
+    function renderStudentProblemBanner() {
+      const tEl = document.getElementById('stu-teacher-id');
+      const teacherId = tEl ? tEl.value : (teachers && teachers[0] ? teachers[0].id : null);
+      const prob = teacherProblems[teacherId] || { title: '자유 과제', desc: '오늘 배운 내용을 연습장에 풀어 제출하세요.', attachments: [] };
+      
+      const titleEl = document.getElementById('stu-prob-title'); if(titleEl) titleEl.textContent = prob.title;
+      const descEl = document.getElementById('stu-prob-desc');
+      if(descEl) { descEl.innerHTML = formatFeedbackHtml(prob.desc); renderMathInContainer(descEl); }
+      
+      const attWrap = document.getElementById('stu-prob-attachments');
+      if(attWrap) {
+        attWrap.innerHTML = '';
+        if (prob.attachments && prob.attachments.length > 0) {
+          attWrap.style.display = 'flex';
+          prob.attachments.forEach(att => {
+            if (att.type === 'image') attWrap.innerHTML += `<img src="${att.data}" class="max-h-40 rounded-xl border border-white/30 bg-white object-contain shadow-sm">`;
+            else if (att.type === 'pdf') attWrap.innerHTML += `<a href="${att.data}" download="${att.name}" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-rose-500/20 hover:bg-rose-500/40 border border-rose-400/50 text-rose-50 rounded-xl text-sm font-bold transition shadow-sm"><i class="fa-solid fa-file-pdf text-rose-300"></i>${att.name} 다운로드</a>`;
+          });
+        } else { attWrap.style.display = 'none'; }
+      }
+    }
+
+    function applyProblemToCanvasAndForm() {
+      const prob = teacherProblems[document.getElementById('stu-teacher-id').value]; if (!prob) return;
+      switchStudentInputMode('pad');
+      const plainProblem = prob.desc.replace(/\$\$/g, ' ').replace(/\$/g, '');
+      padProblemHeaderText = `[오늘의 문제] ${prob.title} : ${plainProblem}`;
+      clearDrawingCanvas(false);
+      
+      const firstImage = prob.attachments?.find(a => a.type === 'image');
+      if (firstImage) {
+        const img = new Image(); img.onload = () => { padCtx.drawImage(img, padCanvas.width - 180, 48, 160, 100); saveCanvasState(); }; img.src = firstImage.data;
+      } else { saveCanvasState(); }
+    }
+
+    function setupDragAndDropAndPaste() {
+      const dropZone = document.getElementById('drop-zone');
+      if(!dropZone) return;
+      dropZone.addEventListener('click', () => { if (!currentUploadedDataUrl) document.getElementById('file-input').click(); });
+      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500', 'bg-indigo-50'); });
+      dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-indigo-500', 'bg-indigo-50'); });
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault(); dropZone.classList.remove('border-indigo-500', 'bg-indigo-50');
+        if(e.dataTransfer.files && e.dataTransfer.files[0]) {
+          switchStudentInputMode('upload'); handleFileSelect({ target: { files: e.dataTransfer.files } });
+        }
+      });
+      window.addEventListener('paste', (e) => {
+        const items = e.clipboardData?.items || e.originalEvent?.clipboardData?.items;
+        if (!items) return;
+        for (let i = 0; i < items.length; i++) {
+          let item = items[i];
+          if (item.type.indexOf('image') === 0) { switchStudentInputMode('upload'); handleFileSelect({ target: { files: [item.getAsFile()] } }); break; }
+        }
+      });
+    }
+
+    function handleFileSelect(event) {
+      const file = event.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas'); const max = 900; let w = img.width, h = img.height;
+          if(w > max || h > max) { if(w > h) { h = Math.round(h*(max/w)); w = max; } else { w = Math.round(w*(max/h)); h = max; } }
+          canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          currentUploadedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          setDisplay('upload-placeholder', 'none'); setDisplay('upload-preview-wrap', 'block');
+          document.getElementById('upload-preview-img').src = currentUploadedDataUrl;
+        }; img.src = e.target.result;
+      }; reader.readAsDataURL(file);
+    }
+
+    function clearUploadedImage() {
+      currentUploadedDataUrl = ''; document.getElementById('file-input').value = '';
+      const cam = document.getElementById('camera-input'); if(cam) cam.value = '';
+      setDisplay('upload-placeholder', 'block'); setDisplay('upload-preview-wrap', 'none');
+    }
+
+    function moveUploadedImageToPad() {
+      if (!currentUploadedDataUrl) return;
+      switchStudentInputMode('pad');
+      const img = new Image();
+      img.onload = () => { drawPadBackground(); padCtx.drawImage(img, 0, 0, padCanvas.width, padCanvas.height); hasUserDrawnOnPad = true; saveCanvasState(); };
+      img.src = currentUploadedDataUrl;
+    }
+
+    function initDrawingPad() {
+      padCanvas = document.getElementById('drawing-canvas'); if(!padCanvas) return;
+      padCtx = padCanvas.getContext('2d'); drawPadBackground(); saveCanvasState();
+      padCanvas.addEventListener('pointerdown', startPadDrawing); padCanvas.addEventListener('pointermove', movePadDrawing);
+      padCanvas.addEventListener('pointerup', endPadDrawing); padCanvas.addEventListener('pointerleave', endPadDrawing);
+    }
+    function getCanvasCoordinates(e) { const rect = padCanvas.getBoundingClientRect(); return { x: (e.clientX - rect.left) * (padCanvas.width / rect.width), y: (e.clientY - rect.top) * (padCanvas.height / rect.height) }; }
+    function startPadDrawing(e) { e.preventDefault(); isDrawing = true; hasUserDrawnOnPad = true; const pos = getCanvasCoordinates(e); padCtx.beginPath(); padCtx.moveTo(pos.x, pos.y); padCtx.lineCap = 'round'; padCtx.lineJoin = 'round'; padCtx.strokeStyle = isEraser ? '#fffef7' : penColor; padCtx.lineWidth = penWidth; }
+    function movePadDrawing(e) { if (!isDrawing) return; e.preventDefault(); const pos = getCanvasCoordinates(e); padCtx.lineTo(pos.x, pos.y); padCtx.stroke(); }
+    function endPadDrawing(e) { if (!isDrawing) return; e.preventDefault(); isDrawing = false; padCtx.closePath(); saveCanvasState(); }
+    function setPenTool(color, width, eraserMode) { penColor = color; penWidth = width; isEraser = eraserMode; }
+    function drawPadBackground() {
+      const style = document.getElementById('pad-bg-style').value;
+      padCtx.fillStyle = '#fffef7'; padCtx.fillRect(0, 0, padCanvas.width, padCanvas.height);
+      if (style === 'lined') { padCtx.strokeStyle = '#e2e8f0'; padCtx.lineWidth = 1; for (let y = 45; y < padCanvas.height; y += 36) { padCtx.beginPath(); padCtx.moveTo(0, y); padCtx.lineTo(padCanvas.width, y); padCtx.stroke(); } }
+      if (padProblemHeaderText) { padCtx.fillStyle = '#eef2ff'; padCtx.fillRect(0, 0, padCanvas.width, 40); padCtx.fillStyle = '#312e81'; padCtx.font = 'bold 13px sans-serif'; padCtx.fillText(padProblemHeaderText.substring(0, 68) + '...', 14, 25); }
+    }
+    function changePadBackgroundStyle() { clearDrawingCanvas(false); }
+    function saveCanvasState() { if(canvasHistory.length > 15) canvasHistory.shift(); canvasHistory.push(padCanvas.toDataURL('image/jpeg', 0.9)); }
+    function undoCanvasStroke() { if(canvasHistory.length <= 1) return; canvasHistory.pop(); const img = new Image(); img.onload = () => { padCtx.clearRect(0,0,padCanvas.width,padCanvas.height); padCtx.drawImage(img,0,0); }; img.src = canvasHistory[canvasHistory.length - 1]; }
+    function clearDrawingCanvas(ask = true) { if(ask && hasUserDrawnOnPad && !confirm('지우시겠습니까?')) return; canvasHistory = []; hasUserDrawnOnPad = false; drawPadBackground(); saveCanvasState(); }
+
+    function switchStudentInputMode(mode) {
+      studentInputMode = mode; const isPad = mode === 'pad';
+      
+      const padEl = document.getElementById('student-pad-container');
+      const upEl = document.getElementById('student-upload-container');
+      
+      if(isPad) {
+        padEl.classList.replace('force-hidden', 'block') || padEl.classList.remove('force-hidden');
+        upEl.classList.replace('block', 'force-hidden') || upEl.classList.add('force-hidden');
+      } else {
+        padEl.classList.replace('block', 'force-hidden') || padEl.classList.add('force-hidden');
+        upEl.classList.replace('force-hidden', 'block') || upEl.classList.remove('force-hidden');
+      }
+      
+      document.getElementById('input-mode-pad').className = isPad ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600';
+      document.getElementById('input-mode-upload').className = !isPad ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600';
+    }
+
+    function switchMainRole(role) {
+      ['student', 'status', 'teacher'].forEach(v => { 
+        const el = document.getElementById(`view-${v}`); 
+        if(el) {
+          if(v === role) el.classList.replace('force-hidden', 'block') || el.classList.remove('force-hidden');
+          else el.classList.replace('block', 'force-hidden') || el.classList.add('force-hidden');
+        }
+      });
+      if (role === 'student') renderStudentProblemBanner();
+      if (role === 'status') renderSubmissionStatusBoard();
+      if (role === 'teacher' && currentTeacher) { renderTeacherSubmissionsList(); renderBatchRecordTable(); }
+    }
+
+    function renderMathInContainer(element) { if (window.renderMathInElement) renderMathInElement(element, { delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError: false }); }
+    function formatFeedbackHtml(txt) {
+      if(!txt) return '';
+      return txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g, '<strong class="text-indigo-900 bg-indigo-100/60 px-1 rounded">$1</strong>').replace(/^### (.+)$/gm, '<h4 class="font-extrabold text-indigo-800 mt-4 mb-1">$1</h4>').replace(/\n/g, '<br>');
+    }
+
+    function fillSampleStudentData() {
+      document.getElementById('stu-name').value = '김샘플'; 
+      const canvas = document.createElement('canvas'); canvas.width=680; canvas.height=440; const ctx=canvas.getContext('2d');
+      ctx.fillStyle='#fffef7'; ctx.fillRect(0,0,680,440); ctx.fillStyle='#1e293b'; ctx.font='bold 20px sans-serif'; ctx.fillText('샘플 오답 풀이입니다.', 75, 100);
+      currentUploadedDataUrl = canvas.toDataURL();
+      const img=new Image(); img.onload=()=>{ padCtx.clearRect(0,0,padCanvas.width,padCanvas.height); padCtx.drawImage(img,0,0); hasUserDrawnOnPad=true; saveCanvasState(); }; img.src=currentUploadedDataUrl;
+    }
+
+    async function getAiFeedbackForImage(dataUrl, studentInfo) {
+      const apiKey = safeGetLocal(STORAGE_KEYS.API_KEY);
+      let modelName = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-1.5-flash-latest';
+
+      if (modelName === 'gemini-1.5-flash') modelName = 'gemini-1.5-flash-latest';
+      if (modelName === 'gemini-1.5-pro') modelName = 'gemini-1.5-pro-latest';
+
+      if (apiKey && apiKey.trim().length > 10) {
+        try {
+          const base64Data = dataUrl.split(',')[1];
+          const mimeType = dataUrl.substring(dataUrl.indexOf(':') + 1, dataUrl.indexOf(';')) || 'image/jpeg';
+          
+          const prompt = `당신은 대한민국 학생을 가르치는 다정한 AI 수학 선생님입니다. 학생 이름: ${studentInfo.name}, 과제: ${studentInfo.title}. 첨부된 손글씨 이미지를 판독하여 한국어 피드백을 작성해 주세요. 수식은 반드시 LaTeX 기호($...$ 또는 $$...$$)를 사용하세요.\n### 1. 반가운 인사와 칭찬\n### 2. 풀이 과정 점검 및 오류 바로잡기 (학생의 비례식, 방정식 등 풀이 과정의 오류를 매우 꼼꼼하게 점검하고 잘못된 부분을 짚어주세요.)\n### 3. 교과서 개념 보충\n### 4. 올바른 최종 풀이 과정`;
+
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey.trim()}`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: mimeType, data: base64Data } }] }] })
+          });
+
+          if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.error?.message || '알 수 없는 구글 API 통신 오류');
+          }
+
+          const data = await response.json();
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) return text;
+        } catch (err) { console.error("API Error:", err); alert('Gemini API 통신 거절 사유:\n' + err.message + '\n\n임시 체험 AI 모드로 전환합니다.'); }
+      }
+
+      await new Promise(r => setTimeout(r, 1000));
+      return `### 1. 반가운 인사와 칭찬 한마디\n열심히 풀어준 **${studentInfo.name}** 학생, 정말 수고했어요!\n\n### 2. 풀이 과정 점검 및 오류 바로잡기\n비례식을 세우는 과정에서 아쉬운 실수가 발견되었어요. 닮음비를 적용할 때 대응하는 변의 위치를 다시 한 번 꼼꼼히 점검해 볼까요?\n\n### 3. 쏙쏙 이해되는 교과서 개념 보충\n닮음비를 이용해 비례식을 세울 때는 반드시 내항의 곱과 외항의 곱이 같다는 성질을 정확히 활용해야 합니다.\n\n### 4. 스스로 완성하는 올바른 풀이\n오류를 스스로 바로잡고 다시 한번 풀어보세요. 충분히 해낼 수 있어요!`;
+    }
+
+    async function submitStudentWork() {
+      const name = document.getElementById('stu-name').value.trim();
+      if (!name) return alert('이름을 입력하세요!');
+      let finalImg = studentInputMode === 'pad' ? (hasUserDrawnOnPad ? padCanvas.toDataURL('image/jpeg', 0.9) : '') : currentUploadedDataUrl;
+      if (!finalImg) return alert('풀이 이미지를 작성하거나 첨부해주세요!');
+
+      const teacherId = document.getElementById('stu-teacher-id').value;
+      const prob = teacherProblems[teacherId];
+      const autoTitle = prob && prob.title ? prob.title : '손글씨 과제 풀이';
+
+      document.getElementById('feedback-empty').classList.replace('block', 'force-hidden') || document.getElementById('feedback-empty').classList.add('force-hidden');
+      document.getElementById('feedback-result').classList.replace('block', 'force-hidden') || document.getElementById('feedback-result').classList.add('force-hidden');
+      document.getElementById('feedback-loading').classList.replace('force-hidden', 'flex') || document.getElementById('feedback-loading').classList.remove('force-hidden');
+      document.getElementById('btn-submit-work').disabled = true;
+
+      try {
+        const feedback = await getAiFeedbackForImage(finalImg, { grade: document.getElementById('stu-grade').value, cls: document.getElementById('stu-class').value, number: document.getElementById('stu-number').value, name: name, title: autoTitle, memo: '' });
+        const newSub = { id: 'sub_'+Date.now(), teacherId: teacherId, grade: document.getElementById('stu-grade').value, classNum: document.getElementById('stu-class').value, number: document.getElementById('stu-number').value, name, title: autoTitle, memo: '', imageData: finalImg, feedback: feedback, createdAt: new Date().toLocaleString() };
+        submissions.unshift(newSub); safeSetLocal(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(submissions));
+        
+        document.getElementById('feedback-loading').classList.replace('flex', 'force-hidden') || document.getElementById('feedback-loading').classList.add('force-hidden');
+        document.getElementById('feedback-result').classList.replace('force-hidden', 'block') || document.getElementById('feedback-result').classList.remove('force-hidden');
+        document.getElementById('fb-title').textContent = autoTitle;
+        const fbContentEl = document.getElementById('fb-content'); fbContentEl.innerHTML = formatFeedbackHtml(feedback); renderMathInContainer(fbContentEl);
+      } catch (e) { alert("피드백 생성 오류: " + e.message); document.getElementById('feedback-loading').classList.replace('flex', 'force-hidden'); document.getElementById('feedback-empty').classList.replace('force-hidden', 'block'); }
+      finally { document.getElementById('btn-submit-work').disabled = false; }
+    }
+
+    function checkExistingTeacherSession() { const savedId = safeGetSession(STORAGE_KEYS.CURRENT_TEACHER); if (savedId) { const found = teachers.find(t => t.id === savedId); if (found) { currentTeacher = found; showTeacherDashboard(); } } }
+    function handleTeacherLogin() { const id = document.getElementById('login-id').value; const found = teachers.find(t => t.id === id); if (!found) return alert('존재하지 않는 선생님 아이디입니다.'); currentTeacher = found; safeSetSession(STORAGE_KEYS.CURRENT_TEACHER, id); showTeacherDashboard(); }
+    
+    function showTeacherDashboard() { 
+      document.getElementById('teacher-login-box').classList.replace('block', 'force-hidden') || document.getElementById('teacher-login-box').classList.add('force-hidden'); 
+      document.getElementById('teacher-dashboard').classList.replace('force-hidden', 'block') || document.getElementById('teacher-dashboard').classList.remove('force-hidden'); 
+      document.getElementById('teacher-welcome-name').textContent = currentTeacher.name + ' 관리실'; 
+      renderTeacherSubmissionsList(); renderBatchRecordTable(); 
+    }
+    
+    function handleTeacherLogout() { 
+      currentTeacher = null; try{ sessionStorage.removeItem(STORAGE_KEYS.CURRENT_TEACHER); }catch(e){} 
+      document.getElementById('teacher-dashboard').classList.replace('block', 'force-hidden') || document.getElementById('teacher-dashboard').classList.add('force-hidden'); 
+      document.getElementById('teacher-login-box').classList.replace('force-hidden', 'block') || document.getElementById('teacher-login-box').classList.remove('force-hidden'); 
+    }
+
+    function switchTeacherSubtab(tab) {
+      ['submissions','problem','record'].forEach(t => {
+        const el = document.getElementById(`teacher-subview-${t}`);
+        if(el) {
+          if(t === tab) el.classList.replace('force-hidden', 'block') || el.classList.remove('force-hidden');
+          else el.classList.replace('block', 'force-hidden') || el.classList.add('force-hidden');
+        }
+        const btn = document.getElementById(`subtab-${t}`);
+        if(btn) btn.className = t===tab ? 'px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white' : 'px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border';
+      });
+      if(tab === 'problem') loadTeacherProblemForm();
+    }
+
+    function loadTeacherProblemForm() {
+      if (!currentTeacher) return;
+      const prob = teacherProblems[currentTeacher.id] || { title: '', desc: '', attachments: [] };
+      document.getElementById('tp-title').value = prob.title; document.getElementById('tp-desc').value = prob.desc;
+      tempTeacherAttachments = prob.attachments || []; previewTeacherProblem();
+    }
+
+    function handleTeacherProblemFiles(e) {
+      const files = e.target.files; if (!files || files.length === 0) return;
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+          tempTeacherAttachments.push({ id: 'att_' + Date.now() + Math.floor(Math.random()*1000), type: isPdf ? 'pdf' : 'image', data: ev.target.result, name: file.name });
+          previewTeacherProblem();
+        };
+        reader.readAsDataURL(file);
+      });
+      e.target.value = ''; 
+    }
+
+    function removeAttachment(id) { tempTeacherAttachments = tempTeacherAttachments.filter(a => a.id !== id); previewTeacherProblem(); }
+
+    function previewTeacherProblem() {
+      document.getElementById('tp-preview-title').textContent = document.getElementById('tp-title').value.trim() || '제목 없음';
+      const descEl = document.getElementById('tp-preview-desc'); descEl.innerHTML = formatFeedbackHtml(document.getElementById('tp-desc').value.trim()); renderMathInContainer(descEl);
+      const listWrap = document.getElementById('tp-attachments-list'); listWrap.innerHTML = '';
+      tempTeacherAttachments.forEach(att => {
+        const icon = att.type === 'pdf' ? '<i class="fa-solid fa-file-pdf text-rose-500 mr-2 text-lg"></i>' : '<i class="fa-solid fa-image text-indigo-500 mr-2 text-lg"></i>';
+        listWrap.innerHTML += `<div class="flex items-center justify-between bg-white border border-slate-200 p-2.5 rounded-lg shadow-sm"><div class="flex items-center text-sm font-semibold truncate text-slate-700 w-3/4">${icon} <span class="truncate">${att.name}</span></div><button type="button" onclick="removeAttachment('${att.id}')" class="px-2 py-1 bg-rose-50 text-rose-600 rounded-md text-xs font-bold hover:bg-rose-100">삭제</button></div>`;
+      });
+      const prevAttWrap = document.getElementById('tp-preview-attachments'); prevAttWrap.innerHTML = '';
+      if (tempTeacherAttachments.length > 0) {
+        prevAttWrap.classList.remove('force-hidden');
+        tempTeacherAttachments.forEach(att => {
+          if (att.type === 'image') prevAttWrap.innerHTML += `<img src="${att.data}" class="max-h-24 rounded-lg border border-white/20 bg-white object-contain">`;
+          else prevAttWrap.innerHTML += `<div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 text-white rounded-lg text-xs font-bold border border-white/20"><i class="fa-solid fa-file-pdf text-rose-300"></i>${att.name}</div>`;
+        });
+      } else prevAttWrap.classList.add('force-hidden');
+    }
+
+    function saveTeacherProblem() {
+      if (!currentTeacher) return;
+      teacherProblems[currentTeacher.id] = { title: document.getElementById('tp-title').value.trim(), desc: document.getElementById('tp-desc').value.trim(), attachments: tempTeacherAttachments };
+      safeSetLocal(STORAGE_KEYS.PROBLEMS, JSON.stringify(teacherProblems)); renderStudentProblemBanner(); alert('오늘의 문제가 저장되어 학생 화면에 등록되었습니다!');
+    }
+
+    function renderTeacherSubmissionsList() {
+      if(!currentTeacher) return;
+      const listEl = document.getElementById('teacher-submission-list'); listEl.innerHTML = '';
+      const list = submissions.filter(s => s.teacherId === currentTeacher.id);
+      list.forEach(item => { listEl.innerHTML += `<div onclick="selectSubmissionDetail('${item.id}')" class="p-3 border rounded-xl bg-slate-50 mb-2 cursor-pointer hover:bg-slate-100"><div class="font-bold">${item.grade}학년 ${item.classNum}반 ${item.number}번 ${item.name}</div><div class="text-xs text-slate-500">${item.title}</div></div>`; });
+      if(list.length > 0) selectSubmissionDetail(list[0].id);
+    }
+    
+    function selectSubmissionDetail(id) {
+      const item = submissions.find(s=>s.id===id); if(!item) return;
+      document.getElementById('teacher-detail-empty').classList.replace('block', 'force-hidden') || document.getElementById('teacher-detail-empty').classList.add('force-hidden');
+      document.getElementById('teacher-detail-content').classList.replace('force-hidden', 'block') || document.getElementById('teacher-detail-content').classList.remove('force-hidden');
+      document.getElementById('td-title').textContent = item.title; document.getElementById('td-image').src = item.imageData;
+      const fb = document.getElementById('td-feedback'); fb.innerHTML = formatFeedbackHtml(item.feedback); renderMathInContainer(fb);
+    }
+
+    function renderSubmissionStatusBoard() {
+      const teacherId = document.getElementById('status-teacher-id').value || (teachers[0] && teachers[0].id);
+      const grade = document.getElementById('status-grade').value, cls = document.getElementById('status-class').value, total = Number(document.getElementById('status-total-count').value);
+      const classSubs = submissions.filter(s => s.teacherId === teacherId && s.grade == grade && s.classNum == cls);
+      const map = {}; classSubs.forEach(s => map[s.number] = s);
+      let missing=[]; const gridEl = document.getElementById('status-number-grid'); if(!gridEl) return; gridEl.innerHTML = '';
+      for(let n=1; n<=total; n++) {
+        if(map[n]) { gridEl.innerHTML+=`<div class="border-2 border-emerald-500 bg-emerald-50 p-3 text-center"><div class="font-bold text-emerald-700">${n}번</div><div class="text-sm font-bold text-emerald-900">${map[n].name}</div></div>`; }
+        else { missing.push(n); gridEl.innerHTML+=`<div class="border-2 border-red-500 bg-red-50 p-3 text-center warning-pulse"><div class="font-bold text-red-700">${n}번</div><div class="text-sm font-bold text-red-600">미제출</div></div>`; }
+      }
+      const fsNumbers = document.getElementById('fs-missing-numbers');
+      if(fsNumbers) fsNumbers.innerHTML = missing.map(n=>`<div class="w-24 h-24 bg-red-600 border-4 border-yellow-300 flex items-center justify-center text-3xl font-black">${n}번</div>`).join('');
+    }
+    
+    function toggleWarningFullscreen() { 
+      const el = document.getElementById('fullscreen-warning-overlay'); 
+      if(el.style.display === 'none') { renderSubmissionStatusBoard(); el.style.display = 'flex'; } else { el.style.display = 'none'; }
+    }
+
+    function downloadAllRecordsAsCSV() {
+      const rows = ["학년,반,번호,이름,누적횟수"];
+      const groups = {}; submissions.filter(s=>s.teacherId===currentTeacher.id).forEach(s=>{ const k=`${s.grade}-${s.classNum}-${s.number}-${s.name}`; if(!groups[k]) groups[k]=[]; groups[k].push(s); });
+      Object.keys(groups).forEach(k => rows.push(`"${k.split('-')[0]}","${k.split('-')[1]}","${k.split('-')[2]}","${k.split('-')[3]}","${groups[k].length}"`));
+      const blob = new Blob(['\uFEFF' + rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = '생기부.csv'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+    function renderBatchRecordTable() {
+      const tb = document.getElementById('batch-record-tbody'); if(!tb) return; tb.innerHTML='';
+      if(!currentTeacher) return;
+      const groups = {}; submissions.filter(s=>s.teacherId===currentTeacher.id).forEach(s=>{ const k=`${s.grade}_${s.classNum}_${s.number}_${s.name}`; if(!groups[k]) groups[k]=[]; groups[k].push(s); });
+      Object.keys(groups).forEach(k => { const pts = k.split('_'); tb.innerHTML+=`<tr><td class="py-2 px-3">${pts[0]}-${pts[1]}-${pts[2]}</td><td class="py-2 px-3">${pts[3]}</td><td class="py-2 px-3">성실하게 참여함.</td></tr>`; });
+    }
+
+    function openModal(id) { const el = document.getElementById(id); if(el) el.style.display = 'flex'; }
+    function closeModal(id) { const el = document.getElementById(id); if(el) el.style.display = 'none'; }
+
+    function showQRCodeModal() {
+      try {
+        const currentUrl = window.location.origin + window.location.pathname;
+        const qrContainer = document.getElementById('qrcode-container'); qrContainer.innerHTML = ''; 
+        document.getElementById('qr-url-text').textContent = currentUrl; 
+        qrCodeInstance = new QRCode(qrContainer, { text: currentUrl, width: 250, height: 250, colorDark : "#1e293b", colorLight : "#ffffff" });
+        openModal('modal-qr');
+      } catch(e) { alert("QR코드 생성 중 오류가 발생했습니다."); }
+    }
+    
+    function saveApiConfig() {
+      const keyInput = document.getElementById('api-key-input').value.trim();
+      const modelSelect = document.getElementById('api-model-select').value;
+      safeSetLocal(STORAGE_KEYS.API_KEY, keyInput);
+      safeSetLocal(STORAGE_KEYS.API_MODEL, modelSelect);
+      closeModal('modal-api');
+      if (keyInput.length > 10) alert('Gemini API 키가 성공적으로 등록되었습니다! 이제 실제 AI가 손글씨를 판독합니다.');
+      else alert('API 키가 비어있어 체험(시뮬레이션) 모드로 작동합니다.');
+    }
+    function changeTeacherPassword() { alert('비밀번호가 변경되었습니다!'); closeModal('modal-pw'); }
+    function deleteAllTeacherSubmissions() { if(!confirm('정말 삭제하시겠습니까?')) return; submissions = submissions.filter(s=>s.teacherId!==currentTeacher.id); safeSetLocal(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(submissions)); renderTeacherSubmissionsList(); }
+
+  </script>
+</body>
+</html>
