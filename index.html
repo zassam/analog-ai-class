@@ -297,7 +297,7 @@
               <div class="bg-slate-900 text-white rounded-2xl p-5 shadow space-y-3">
                 <h4 id="tp-preview-title" class="text-lg font-bold"></h4>
                 <div id="tp-preview-desc" class="text-sm text-indigo-100 bg-white/10 rounded-xl p-3.5"></div>
-                <div id="tp-preview-attachments" class="flex flex-wrap gap-2 pt-2" style="display: none;"></div>
+                <div id="tp-preview-attachments" class="force-hidden flex flex-wrap gap-2 pt-2"></div>
               </div>
             </div>
           </div>
@@ -374,9 +374,17 @@
     function safeGetSession(k) { try { return sessionStorage.getItem(k); } catch(e) { return null; } }
     function safeSetSession(k, v) { try { sessionStorage.setItem(k, v); } catch(e) { console.warn("세션 차단됨"); } }
     
-    function setDisplay(id, displayType) { const el = document.getElementById(id); if (el) el.style.display = displayType; }
+    // [핵심 해결] !important가 포함된 클래스(force-hidden)를 완벽하게 통제하도록 수정되었습니다.
+    function setDisplay(id, displayType) { 
+      const el = document.getElementById(id); 
+      if (el) { 
+        el.style.display = displayType; 
+        if(displayType === 'none') el.classList.add('force-hidden'); 
+        else el.classList.remove('force-hidden'); 
+      } 
+    }
 
-    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v17', SUBMISSIONS: 'hw_ai_submissions_v17', PROBLEMS: 'hw_ai_problems_v17', API_KEY: 'hw_ai_gemini_key_v17', API_MODEL: 'hw_ai_gemini_model_v17', CURRENT_TEACHER: 'hw_ai_logged_teacher_v17' };
+    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v18', SUBMISSIONS: 'hw_ai_submissions_v18', PROBLEMS: 'hw_ai_problems_v18', API_KEY: 'hw_ai_gemini_key_v18', API_MODEL: 'hw_ai_gemini_model_v18', CURRENT_TEACHER: 'hw_ai_logged_teacher_v18' };
 
     let teachers=[], submissions=[], teacherProblems={}, currentTeacher=null;
     let studentInputMode='pad', currentUploadedDataUrl='', selectedSubmissionId=null, tempTeacherAttachments=[];
@@ -441,12 +449,12 @@
       if(attWrap) {
         attWrap.innerHTML = '';
         if (prob.attachments && prob.attachments.length > 0) {
-          attWrap.style.display = 'flex';
+          setDisplay('stu-prob-attachments', 'flex');
           prob.attachments.forEach(att => {
             if (att.type === 'image') attWrap.innerHTML += `<img src="${att.data}" class="max-h-40 rounded-xl border border-white/30 bg-white object-contain shadow-sm">`;
             else if (att.type === 'pdf') attWrap.innerHTML += `<a href="${att.data}" download="${att.name}" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-rose-500/20 hover:bg-rose-500/40 border border-rose-400/50 text-rose-50 rounded-xl text-sm font-bold transition shadow-sm"><i class="fa-solid fa-file-pdf text-rose-300"></i>${att.name} 다운로드</a>`;
           });
-        } else { attWrap.style.display = 'none'; }
+        } else { setDisplay('stu-prob-attachments', 'none'); }
       }
     }
 
@@ -540,16 +548,8 @@
     function switchStudentInputMode(mode) {
       studentInputMode = mode; const isPad = mode === 'pad';
       
-      const padEl = document.getElementById('student-pad-container');
-      const upEl = document.getElementById('student-upload-container');
-      
-      if(isPad) {
-        padEl.classList.replace('force-hidden', 'block') || padEl.classList.remove('force-hidden');
-        upEl.classList.replace('block', 'force-hidden') || upEl.classList.add('force-hidden');
-      } else {
-        padEl.classList.replace('block', 'force-hidden') || padEl.classList.add('force-hidden');
-        upEl.classList.replace('force-hidden', 'block') || upEl.classList.remove('force-hidden');
-      }
+      setDisplay('student-pad-container', isPad ? 'block' : 'none');
+      setDisplay('student-upload-container', !isPad ? 'block' : 'none');
       
       document.getElementById('input-mode-pad').className = isPad ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600';
       document.getElementById('input-mode-upload').className = !isPad ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600';
@@ -557,11 +557,7 @@
 
     function switchMainRole(role) {
       ['student', 'status', 'teacher'].forEach(v => { 
-        const el = document.getElementById(`view-${v}`); 
-        if(el) {
-          if(v === role) el.classList.replace('force-hidden', 'block') || el.classList.remove('force-hidden');
-          else el.classList.replace('block', 'force-hidden') || el.classList.add('force-hidden');
-        }
+        setDisplay(`view-${v}`, v === role ? 'block' : 'none');
       });
       if (role === 'student') renderStudentProblemBanner();
       if (role === 'status') renderSubmissionStatusBoard();
@@ -626,9 +622,7 @@
       const prob = teacherProblems[teacherId];
       const autoTitle = prob && prob.title ? prob.title : '손글씨 과제 풀이';
 
-      document.getElementById('feedback-empty').classList.replace('block', 'force-hidden') || document.getElementById('feedback-empty').classList.add('force-hidden');
-      document.getElementById('feedback-result').classList.replace('block', 'force-hidden') || document.getElementById('feedback-result').classList.add('force-hidden');
-      document.getElementById('feedback-loading').classList.replace('force-hidden', 'flex') || document.getElementById('feedback-loading').classList.remove('force-hidden');
+      setDisplay('feedback-empty', 'none'); setDisplay('feedback-result', 'none'); setDisplay('feedback-loading', 'flex');
       document.getElementById('btn-submit-work').disabled = true;
 
       try {
@@ -636,11 +630,10 @@
         const newSub = { id: 'sub_'+Date.now(), teacherId: teacherId, grade: document.getElementById('stu-grade').value, classNum: document.getElementById('stu-class').value, number: document.getElementById('stu-number').value, name, title: autoTitle, memo: '', imageData: finalImg, feedback: feedback, createdAt: new Date().toLocaleString() };
         submissions.unshift(newSub); safeSetLocal(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(submissions));
         
-        document.getElementById('feedback-loading').classList.replace('flex', 'force-hidden') || document.getElementById('feedback-loading').classList.add('force-hidden');
-        document.getElementById('feedback-result').classList.replace('force-hidden', 'block') || document.getElementById('feedback-result').classList.remove('force-hidden');
+        setDisplay('feedback-loading', 'none'); setDisplay('feedback-result', 'block');
         document.getElementById('fb-title').textContent = autoTitle;
         const fbContentEl = document.getElementById('fb-content'); fbContentEl.innerHTML = formatFeedbackHtml(feedback); renderMathInContainer(fbContentEl);
-      } catch (e) { alert("피드백 생성 오류: " + e.message); document.getElementById('feedback-loading').classList.replace('flex', 'force-hidden'); document.getElementById('feedback-empty').classList.replace('force-hidden', 'block'); }
+      } catch (e) { alert("피드백 생성 오류: " + e.message); setDisplay('feedback-loading', 'none'); setDisplay('feedback-empty', 'flex'); }
       finally { document.getElementById('btn-submit-work').disabled = false; }
     }
 
@@ -648,25 +641,19 @@
     function handleTeacherLogin() { const id = document.getElementById('login-id').value; const found = teachers.find(t => t.id === id); if (!found) return alert('존재하지 않는 선생님 아이디입니다.'); currentTeacher = found; safeSetSession(STORAGE_KEYS.CURRENT_TEACHER, id); showTeacherDashboard(); }
     
     function showTeacherDashboard() { 
-      document.getElementById('teacher-login-box').classList.replace('block', 'force-hidden') || document.getElementById('teacher-login-box').classList.add('force-hidden'); 
-      document.getElementById('teacher-dashboard').classList.replace('force-hidden', 'block') || document.getElementById('teacher-dashboard').classList.remove('force-hidden'); 
+      setDisplay('teacher-login-box', 'none'); setDisplay('teacher-dashboard', 'block');
       document.getElementById('teacher-welcome-name').textContent = currentTeacher.name + ' 관리실'; 
       renderTeacherSubmissionsList(); renderBatchRecordTable(); 
     }
     
     function handleTeacherLogout() { 
       currentTeacher = null; try{ sessionStorage.removeItem(STORAGE_KEYS.CURRENT_TEACHER); }catch(e){} 
-      document.getElementById('teacher-dashboard').classList.replace('block', 'force-hidden') || document.getElementById('teacher-dashboard').classList.add('force-hidden'); 
-      document.getElementById('teacher-login-box').classList.replace('force-hidden', 'block') || document.getElementById('teacher-login-box').classList.remove('force-hidden'); 
+      setDisplay('teacher-dashboard', 'none'); setDisplay('teacher-login-box', 'block');
     }
 
     function switchTeacherSubtab(tab) {
       ['submissions','problem','record'].forEach(t => {
-        const el = document.getElementById(`teacher-subview-${t}`);
-        if(el) {
-          if(t === tab) el.classList.replace('force-hidden', 'block') || el.classList.remove('force-hidden');
-          else el.classList.replace('block', 'force-hidden') || el.classList.add('force-hidden');
-        }
+        setDisplay(`teacher-subview-${t}`, t === tab ? (t === 'submissions' ? 'grid' : 'block') : 'none');
         const btn = document.getElementById(`subtab-${t}`);
         if(btn) btn.className = t===tab ? 'px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white' : 'px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border';
       });
@@ -706,12 +693,12 @@
       });
       const prevAttWrap = document.getElementById('tp-preview-attachments'); prevAttWrap.innerHTML = '';
       if (tempTeacherAttachments.length > 0) {
-        prevAttWrap.classList.remove('force-hidden');
+        setDisplay('tp-preview-attachments', 'flex');
         tempTeacherAttachments.forEach(att => {
           if (att.type === 'image') prevAttWrap.innerHTML += `<img src="${att.data}" class="max-h-24 rounded-lg border border-white/20 bg-white object-contain">`;
           else prevAttWrap.innerHTML += `<div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 text-white rounded-lg text-xs font-bold border border-white/20"><i class="fa-solid fa-file-pdf text-rose-300"></i>${att.name}</div>`;
         });
-      } else prevAttWrap.classList.add('force-hidden');
+      } else { setDisplay('tp-preview-attachments', 'none'); }
     }
 
     function saveTeacherProblem() {
@@ -730,8 +717,7 @@
     
     function selectSubmissionDetail(id) {
       const item = submissions.find(s=>s.id===id); if(!item) return;
-      document.getElementById('teacher-detail-empty').classList.replace('block', 'force-hidden') || document.getElementById('teacher-detail-empty').classList.add('force-hidden');
-      document.getElementById('teacher-detail-content').classList.replace('force-hidden', 'block') || document.getElementById('teacher-detail-content').classList.remove('force-hidden');
+      setDisplay('teacher-detail-empty', 'none'); setDisplay('teacher-detail-content', 'block');
       document.getElementById('td-title').textContent = item.title; document.getElementById('td-image').src = item.imageData;
       const fb = document.getElementById('td-feedback'); fb.innerHTML = formatFeedbackHtml(item.feedback); renderMathInContainer(fb);
     }
