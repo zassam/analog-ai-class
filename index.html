@@ -322,10 +322,12 @@
   <div id="modal-api" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="display: none;">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
       <h3 class="font-bold text-base border-b pb-3">고성능 AI 모델 설정 (Gemini)</h3>
+      <!-- v21: 세부 모델 버전을 직접 선택할 수 있도록 옵션 확장 -->
       <select id="api-model-select" class="w-full rounded-xl border px-3 py-2 text-sm mb-2">
-        <!-- 꼬리표 없는 공식 기본 모델명으로 완전 고정 -->
-        <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash (안정성 권장)</option>
-        <option value="gemini-1.5-pro">Gemini 1.5 Pro (고난도)</option>
+        <option value="gemini-1.5-flash-002" selected>Gemini 1.5 Flash - 002 버젼 (가장 추천)</option>
+        <option value="gemini-1.5-flash-001">Gemini 1.5 Flash - 001 버젼 (구버전 안정판)</option>
+        <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash 8B (초경량 버젼)</option>
+        <option value="gemini-1.5-pro-002">Gemini 1.5 Pro - 002 버젼 (고난도)</option>
       </select>
       <input type="password" id="api-key-input" placeholder="API Key 입력" class="w-full rounded-xl border px-3 py-2 text-sm">
       <div class="flex justify-end gap-2 pt-2">
@@ -370,8 +372,8 @@
       } 
     }
 
-    // [최종] v20 버전 적용 완료
-    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v20', SUBMISSIONS: 'hw_ai_submissions_v20', PROBLEMS: 'hw_ai_problems_v20', API_KEY: 'hw_ai_gemini_key_v20', API_MODEL: 'hw_ai_gemini_model_v20', CURRENT_TEACHER: 'hw_ai_logged_teacher_v20' };
+    // [최종] v21 버전
+    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v21', SUBMISSIONS: 'hw_ai_submissions_v21', PROBLEMS: 'hw_ai_problems_v21', API_KEY: 'hw_ai_gemini_key_v21', API_MODEL: 'hw_ai_gemini_model_v21', CURRENT_TEACHER: 'hw_ai_logged_teacher_v21' };
 
     let teachers=[], submissions=[], teacherProblems={}, currentTeacher=null;
     let studentInputMode='pad', currentUploadedDataUrl='', selectedSubmissionId=null, tempTeacherAttachments=[];
@@ -397,7 +399,7 @@
       
       try {
         const apiEl = document.getElementById('api-key-input'); if(apiEl) apiEl.value = safeGetLocal(STORAGE_KEYS.API_KEY) || '';
-        const modelEl = document.getElementById('api-model-select'); if(modelEl) modelEl.value = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-1.5-flash';
+        const modelEl = document.getElementById('api-model-select'); if(modelEl) modelEl.value = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-1.5-flash-002';
       } catch(e) {}
     }
 
@@ -548,18 +550,12 @@
       const img=new Image(); img.onload=()=>{ padCtx.clearRect(0,0,padCanvas.width,padCanvas.height); padCtx.drawImage(img,0,0); hasUserDrawnOnPad=true; saveCanvasState(); }; img.src=currentUploadedDataUrl;
     }
 
-    // [최종 완료] API 버전에 존재하지 않는 -latest 꼬리표를 모두 제거하고 강제 설정합니다.
     async function getAiFeedbackForImage(dataUrl, studentInfo) {
       const apiKey = safeGetLocal(STORAGE_KEYS.API_KEY);
-      let modelName = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-1.5-flash';
-
-      // 저장된 모델명에 문제가 되는 latest가 남아있다면 제거합니다.
-      if (modelName.includes('latest')) {
-        modelName = modelName.replace('-latest', '');
-      }
+      let modelName = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-1.5-flash-002';
 
       if (!apiKey || apiKey.trim().length < 10) {
-        throw new Error('API 키가 올바르게 등록되지 않았습니다.\n\n우측 상단 [선생님 관리실] 탭 ➔ [AI 키설정]에서 구글 API 키를 다시 한 번 정확히 저장해 주세요!');
+        throw new Error('API 키가 올바르게 등록되지 않았습니다.\n\n우측 상단 [선생님 관리실] 탭 ➔ [AI 키설정]에서 구글 API 키를 정확히 입력하고 저장해 주세요!');
       }
 
       const base64Data = dataUrl.split(',')[1];
