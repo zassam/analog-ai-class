@@ -180,7 +180,7 @@
                 <p class="text-xs text-slate-500">풀이의 칭찬할 점과 보충 개념을 수식으로 알려드려요.</p>
               </div>
             </div>
-            <span id="ai-mode-badge" class="text-xs px-2.5 py-1 rounded-full font-semibold bg-amber-50 text-amber-700 border border-amber-200">체험 AI 모드</span>
+            <!-- 가짜 모드 뱃지 삭제됨 -->
           </div>
 
           <div id="feedback-empty" class="flex-1 flex flex-col items-center justify-center text-center py-16 text-slate-400 block">
@@ -383,7 +383,8 @@
       } 
     }
 
-    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v18', SUBMISSIONS: 'hw_ai_submissions_v18', PROBLEMS: 'hw_ai_problems_v18', API_KEY: 'hw_ai_gemini_key_v18', API_MODEL: 'hw_ai_gemini_model_v18', CURRENT_TEACHER: 'hw_ai_logged_teacher_v18' };
+    // [최종] v19로 버전 영구 고정
+    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v19', SUBMISSIONS: 'hw_ai_submissions_v19', PROBLEMS: 'hw_ai_problems_v19', API_KEY: 'hw_ai_gemini_key_v19', API_MODEL: 'hw_ai_gemini_model_v19', CURRENT_TEACHER: 'hw_ai_logged_teacher_v19' };
 
     let teachers=[], submissions=[], teacherProblems={}, currentTeacher=null;
     let studentInputMode='pad', currentUploadedDataUrl='', selectedSubmissionId=null, tempTeacherAttachments=[];
@@ -577,7 +578,7 @@
       const img=new Image(); img.onload=()=>{ padCtx.clearRect(0,0,padCanvas.width,padCanvas.height); padCtx.drawImage(img,0,0); hasUserDrawnOnPad=true; saveCanvasState(); }; img.src=currentUploadedDataUrl;
     }
 
-    // [최종 핵심 패치] 안전 필터를 완전히 끄고, AI가 응답을 생성하지 못한 사유를 명확히 출력합니다.
+    // [최종 완전수정] 가짜 피드백 완전 삭제! 키가 없거나 실패하면 반드시 에러를 화면에 띄웁니다.
     async function getAiFeedbackForImage(dataUrl, studentInfo) {
       const apiKey = safeGetLocal(STORAGE_KEYS.API_KEY);
       let modelName = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-1.5-flash-latest';
@@ -585,45 +586,43 @@
       if (modelName === 'gemini-1.5-flash') modelName = 'gemini-1.5-flash-latest';
       if (modelName === 'gemini-1.5-pro') modelName = 'gemini-1.5-pro-latest';
 
-      if (apiKey && apiKey.trim().length > 10) {
-        const base64Data = dataUrl.split(',')[1];
-        const mimeType = dataUrl.substring(dataUrl.indexOf(':') + 1, dataUrl.indexOf(';')) || 'image/jpeg';
-        
-        const prompt = `당신은 대한민국 학생을 가르치는 다정한 AI 수학 선생님입니다. 학생 이름: ${studentInfo.name}, 과제: ${studentInfo.title}. 첨부된 손글씨 이미지를 판독하여 한국어 피드백을 작성해 주세요. 수식은 반드시 LaTeX 기호($...$ 또는 $$...$$)를 사용하세요.\n### 1. 반가운 인사와 칭찬\n### 2. 풀이 과정 점검 및 오류 바로잡기 (학생의 비례식, 방정식 등 풀이 과정의 오류를 매우 꼼꼼하게 점검하고 잘못된 부분을 짚어주세요.)\n### 3. 교과서 개념 보충\n### 4. 올바른 최종 풀이 과정`;
-
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey.trim()}`, {
-          method: 'POST', 
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: mimeType, data: base64Data } }] }],
-            // 안전 필터 강제 해제 (손글씨 수식 인식 중 오류 방지)
-            safetySettings: [
-              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-            ]
-          })
-        });
-
-        if (!response.ok) {
-          const errData = await response.json();
-          throw new Error(errData.error?.message || '알 수 없는 구글 API 통신 오류');
-        }
-
-        const data = await response.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        
-        if (text) {
-          return text;
-        } else {
-          const reason = data.candidates?.[0]?.finishReason || '알 수 없음';
-          throw new Error(`AI가 안전 필터 또는 알 수 없는 이유로 답변을 생성하지 못했습니다. (사유: ${reason})\n사진을 다시 찍어 올려보세요.`);
-        }
+      if (!apiKey || apiKey.trim().length < 10) {
+        throw new Error('API 키가 등록되지 않았습니다.\n우측 상단 [선생님 관리실] 탭으로 이동하여 [AI 키설정] 버튼을 누르고 발급받은 Gemini API 키를 저장해 주세요!');
       }
 
-      await new Promise(r => setTimeout(r, 1000));
-      return `### 1. 반가운 인사와 칭찬 한마디\n열심히 풀어준 **${studentInfo.name}** 학생, 정말 수고했어요!\n\n### 2. 풀이 과정 점검 및 오류 바로잡기\n비례식을 세우는 과정에서 아쉬운 실수가 발견되었어요. 닮음비를 적용할 때 대응하는 변의 위치를 다시 한 번 꼼꼼히 점검해 볼까요?\n\n### 3. 쏙쏙 이해되는 교과서 개념 보충\n닮음비를 이용해 비례식을 세울 때는 반드시 내항의 곱과 외항의 곱이 같다는 성질을 정확히 활용해야 합니다.\n\n### 4. 스스로 완성하는 올바른 풀이\n오류를 스스로 바로잡고 다시 한번 풀어보세요. 충분히 해낼 수 있어요!`;
+      const base64Data = dataUrl.split(',')[1];
+      const mimeType = dataUrl.substring(dataUrl.indexOf(':') + 1, dataUrl.indexOf(';')) || 'image/jpeg';
+      
+      const prompt = `당신은 대한민국 학생을 가르치는 다정한 AI 수학 선생님입니다. 학생 이름: ${studentInfo.name}, 과제: ${studentInfo.title}. 첨부된 손글씨 이미지를 판독하여 한국어 피드백을 작성해 주세요. 수식은 반드시 LaTeX 기호($...$ 또는 $$...$$)를 사용하세요.\n### 1. 반가운 인사와 칭찬\n### 2. 풀이 과정 점검 및 오류 바로잡기 (학생의 비례식, 방정식 등 풀이 과정의 오류를 매우 꼼꼼하게 점검하고 잘못된 부분을 짚어주세요.)\n### 3. 교과서 개념 보충\n### 4. 올바른 최종 풀이 과정`;
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey.trim()}`, {
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: mimeType, data: base64Data } }] }],
+          safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error?.message || '알 수 없는 구글 API 통신 오류가 발생했습니다.');
+      }
+
+      const data = await response.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      
+      if (text) {
+        return text;
+      } else {
+        const reason = data.candidates?.[0]?.finishReason || '알 수 없음';
+        throw new Error(`AI가 안전 필터 또는 알 수 없는 이유로 답변 생성을 중단했습니다. (사유: ${reason})\n다른 사진으로 다시 시도해 주세요.`);
+      }
     }
 
     async function submitStudentWork() {
@@ -793,7 +792,7 @@
       safeSetLocal(STORAGE_KEYS.API_MODEL, modelSelect);
       closeModal('modal-api');
       if (keyInput.length > 10) alert('Gemini API 키가 성공적으로 등록되었습니다! 이제 실제 AI가 손글씨를 판독합니다.');
-      else alert('API 키가 비어있어 체험(시뮬레이션) 모드로 작동합니다.');
+      else alert('API 키가 비워져 있습니다. [선생님 관리실]에서 정확한 키를 입력해 주세요!');
     }
     function changeTeacherPassword() { alert('비밀번호가 변경되었습니다!'); closeModal('modal-pw'); }
     function deleteAllTeacherSubmissions() { if(!confirm('정말 삭제하시겠습니까?')) return; submissions = submissions.filter(s=>s.teacherId!==currentTeacher.id); safeSetLocal(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(submissions)); renderTeacherSubmissionsList(); }
