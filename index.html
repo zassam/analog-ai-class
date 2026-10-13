@@ -29,7 +29,7 @@
 <body class="min-h-screen flex flex-col text-slate-800">
 
   <div id="js-error-banner" class="force-hidden bg-rose-600 text-white p-3 text-center text-sm font-bold z-[9999] w-full relative">
-    <i class="fa-solid fa-triangle-exclamation mr-2"></i>웹사이트 로딩 중 오류가 발생했습니다. 브라우저 캐시를 지우거나 새로고침(F5) 해주세요.
+    <i class="fa-solid fa-triangle-exclamation mr-2"></i>웹사이트 로딩 중 오류가 발생했습니다. 새로고침(F5) 해주세요.
   </div>
 
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
@@ -50,6 +50,7 @@
   </header>
 
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
+    <!-- 학생 화면 -->
     <section id="view-student" class="space-y-6 block">
       <div id="student-problem-banner" class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white rounded-2xl p-5 shadow-md border border-indigo-700">
         <div class="flex flex-col lg:flex-row justify-between gap-5">
@@ -66,7 +67,7 @@
             <button type="button" onclick="applyProblemToCanvasAndForm()" class="px-4 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold rounded-xl text-xs shadow flex flex-col items-center justify-center text-center gap-1.5 transition">
               <i class="fa-solid fa-pen-to-square text-lg"></i><span>아래 연습장에<br>이 문제 불러오기</span>
             </button>
-            <p class="text-[10px] text-indigo-300 text-center leading-tight">* PDF 파일은 클릭하여 직접 다운로드 후 활용해 주세요.</p>
+            <p class="text-[10px] text-indigo-300 text-center leading-tight">* PDF 파일은 직접 다운로드 후 활용해 주세요.</p>
           </div>
         </div>
       </div>
@@ -76,14 +77,14 @@
           <div class="flex items-center justify-between border-b border-slate-100 pb-4">
             <div>
               <h2 class="text-lg font-bold text-slate-900"><i class="fa-solid fa-file-signature text-indigo-600 mr-2"></i>손글씨 풀이 작성 및 제출</h2>
-              <p class="text-xs text-slate-500 mt-0.5">화면 연습장에 직접 손글씨로 풀거나, 공책에 푼 사진을 올려주세요.</p>
+              <p class="text-xs text-slate-500 mt-0.5">화면 연습장에 직접 쓰거나, 공책에 푼 사진을 올려주세요.</p>
             </div>
-            <button onclick="fillSampleStudentData()" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>샘플 자동 입력</button>
+            <button onclick="fillSampleStudentData()" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>샘플 입력</button>
           </div>
 
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1.5">담당 선생님 선택</label>
-            <select id="stu-teacher-id" onchange="renderStudentProblemBanner()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-50 font-medium"></select>
+            <select id="stu-teacher-id" onchange="renderStudentProblemBanner()" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm outline-none bg-slate-50 font-medium"></select>
           </div>
 
           <div class="grid grid-cols-3 gap-3">
@@ -94,7 +95,7 @@
 
           <div>
             <label class="block text-xs font-bold text-slate-700 mb-1">학생 이름</label>
-            <input type="text" id="stu-name" placeholder="예: 김하늘" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+            <input type="text" id="stu-name" placeholder="예: 김하늘" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm outline-none">
           </div>
 
           <div class="space-y-3">
@@ -109,10 +110,10 @@
             <div id="student-pad-container" class="border-2 border-indigo-200 rounded-2xl p-3 bg-slate-50 space-y-2.5 block">
               <div class="flex flex-wrap items-center justify-between gap-2 bg-white p-2 rounded-xl border border-slate-200">
                 <div class="flex items-center gap-1.5">
-                  <button type="button" onclick="setPenTool('#0f172a', 3, false)" id="pen-black" class="w-7 h-7 rounded-full bg-slate-900 text-white ring-2 ring-offset-1 ring-indigo-500"><i class="fa-solid fa-pen text-[10px]"></i></button>
-                  <button type="button" onclick="setPenTool('#1d4ed8', 3, false)" id="pen-blue" class="w-7 h-7 rounded-full bg-blue-700 text-white"><i class="fa-solid fa-pen text-[10px]"></i></button>
-                  <button type="button" onclick="setPenTool('#dc2626', 3, false)" id="pen-red" class="w-7 h-7 rounded-full bg-red-600 text-white"><i class="fa-solid fa-pen text-[10px]"></i></button>
-                  <button type="button" onclick="setPenTool('#ffffff', 20, true)" id="pen-eraser" class="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">지우개</button>
+                  <button type="button" onclick="setPenTool('#0f172a', 3, false)" class="w-7 h-7 rounded-full bg-slate-900 text-white"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                  <button type="button" onclick="setPenTool('#1d4ed8', 3, false)" class="w-7 h-7 rounded-full bg-blue-700 text-white"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                  <button type="button" onclick="setPenTool('#dc2626', 3, false)" class="w-7 h-7 rounded-full bg-red-600 text-white"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                  <button type="button" onclick="setPenTool('#ffffff', 20, true)" class="px-2 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">지우개</button>
                 </div>
                 <div class="flex items-center gap-1.5">
                   <select id="pad-bg-style" onchange="changePadBackgroundStyle()" class="rounded-lg border px-2 py-1 text-xs font-semibold bg-slate-50"><option value="lined">줄노트</option><option value="grid">모눈</option><option value="blank">백지</option></select>
@@ -126,7 +127,7 @@
             </div>
 
             <div id="student-upload-container" class="force-hidden">
-              <div id="drop-zone" class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-50/70 transition-all">
+              <div id="drop-zone" class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-50/70">
                 <input type="file" id="file-input" accept="image/*" class="force-hidden" onchange="handleFileSelect(event)">
                 <input type="file" id="camera-input" accept="image/*" capture="environment" class="force-hidden" onchange="handleFileSelect(event)">
                 
@@ -134,25 +135,25 @@
                   <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-cloud-arrow-up"></i></div>
                   <div>
                     <p class="text-sm font-bold text-slate-700">풀이 이미지를 드래그하거나 첨부하세요</p>
-                    <p class="text-xs text-slate-500 mt-1">화면 캡처 후 <kbd class="px-1 py-0.5 bg-white border rounded">Ctrl + V</kbd> 로 바로 붙여넣기도 가능합니다!</p>
+                    <p class="text-xs text-slate-500 mt-1">화면 캡처 후 Ctrl + V 로 붙여넣기도 가능합니다!</p>
                   </div>
                   <div class="flex flex-wrap justify-center gap-2">
-                    <button type="button" onclick="event.stopPropagation(); document.getElementById('file-input').click()" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 shadow-sm transition">
+                    <button type="button" onclick="event.stopPropagation(); document.getElementById('file-input').click()" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100">
                       <i class="fa-regular fa-folder-open mr-1 text-indigo-600"></i>파일 첨부하기
                     </button>
-                    <button type="button" onclick="event.stopPropagation(); document.getElementById('camera-input').click()" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 shadow-sm transition">
+                    <button type="button" onclick="event.stopPropagation(); document.getElementById('camera-input').click()" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100">
                       <i class="fa-solid fa-camera mr-1 text-emerald-600"></i>카메라 촬영
                     </button>
                   </div>
                 </div>
 
                 <div id="upload-preview-wrap" class="force-hidden space-y-3">
-                  <img id="upload-preview-img" src="" class="max-h-64 mx-auto rounded-xl border border-slate-200 shadow-sm bg-white object-contain">
+                  <img id="upload-preview-img" src="" class="max-h-64 mx-auto rounded-xl border border-slate-200 bg-white object-contain">
                   <div class="flex justify-center gap-2">
-                    <button type="button" onclick="event.stopPropagation(); moveUploadedImageToPad()" class="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold transition">
+                    <button type="button" onclick="event.stopPropagation(); moveUploadedImageToPad()" class="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold">
                       <i class="fa-solid fa-pen-nib mr-1"></i>이 사진 위에 덧붙여 쓰기
                     </button>
-                    <button type="button" onclick="event.stopPropagation(); clearUploadedImage()" class="px-3 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-semibold transition">
+                    <button type="button" onclick="event.stopPropagation(); clearUploadedImage()" class="px-3 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-semibold">
                       <i class="fa-solid fa-trash-can mr-1"></i>사진 다시 올리기
                     </button>
                   </div>
@@ -180,7 +181,6 @@
                 <p class="text-xs text-slate-500">풀이의 칭찬할 점과 보충 개념을 수식으로 알려드려요.</p>
               </div>
             </div>
-            <!-- 가짜 모드 뱃지 삭제됨 -->
           </div>
 
           <div id="feedback-empty" class="flex-1 flex flex-col items-center justify-center text-center py-16 text-slate-400 block">
@@ -206,14 +206,14 @@
       </div>
     </section>
 
-    <!-- 2. 제출 현황판 -->
+    <!-- 현황판 및 관리실 등 나머지 UI 요소들 -->
     <section id="view-status" class="space-y-6 force-hidden">
       <div class="bg-white rounded-2xl shadow-sm border p-5 flex flex-wrap items-center justify-between gap-4">
         <div class="flex flex-wrap items-center gap-3">
-          <div><label class="block text-[11px] font-bold text-slate-500">담당 선생님</label><select id="status-teacher-id" onchange="renderSubmissionStatusBoard()" class="rounded-lg border px-3 py-1.5 text-sm font-semibold"></select></div>
-          <div><label class="block text-[11px] font-bold text-slate-500">학년</label><select id="status-grade" onchange="renderSubmissionStatusBoard()" class="rounded-lg border px-3 py-1.5 text-sm font-semibold"></select></div>
-          <div><label class="block text-[11px] font-bold text-slate-500">반</label><select id="status-class" onchange="renderSubmissionStatusBoard()" class="rounded-lg border px-3 py-1.5 text-sm font-semibold"></select></div>
-          <div><label class="block text-[11px] font-bold text-slate-500">학급 인원수</label><select id="status-total-count" onchange="renderSubmissionStatusBoard()" class="rounded-lg border px-3 py-1.5 text-sm font-semibold"><option value="30" selected>30명 (1~30번)</option></select></div>
+          <div><label class="block text-[11px] font-bold text-slate-500">담당 선생님</label><select id="status-teacher-id" onchange="renderSubmissionStatusBoard()" class="rounded-lg border px-3 py-1.5 text-sm"></select></div>
+          <div><label class="block text-[11px] font-bold text-slate-500">학년</label><select id="status-grade" onchange="renderSubmissionStatusBoard()" class="rounded-lg border px-3 py-1.5 text-sm"></select></div>
+          <div><label class="block text-[11px] font-bold text-slate-500">반</label><select id="status-class" onchange="renderSubmissionStatusBoard()" class="rounded-lg border px-3 py-1.5 text-sm"></select></div>
+          <div><label class="block text-[11px] font-bold text-slate-500">학급 인원수</label><select id="status-total-count" onchange="renderSubmissionStatusBoard()" class="rounded-lg border px-3 py-1.5 text-sm"><option value="30" selected>30명 (1~30번)</option></select></div>
         </div>
         <button onclick="toggleWarningFullscreen()" class="px-4 py-2.5 bg-red-600 text-white font-bold rounded-xl shadow-md warning-pulse"><i class="fa-solid fa-triangle-exclamation"></i> 미제출 경고 화면 켜기</button>
       </div>
@@ -223,17 +223,16 @@
       </div>
     </section>
 
-    <!-- 3. 선생님 관리실 -->
     <section id="view-teacher" class="space-y-6 force-hidden">
       <div id="teacher-login-box" class="max-w-md mx-auto bg-white rounded-2xl shadow-md border p-8 mt-6 block">
         <div class="text-center mb-6">
-          <div class="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-2xl mx-auto mb-3 shadow-md"><i class="fa-solid fa-user-lock"></i></div>
+          <div class="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-2xl mx-auto mb-3"><i class="fa-solid fa-user-lock"></i></div>
           <h2 class="text-xl font-bold text-slate-900">선생님 전용 관리실 로그인</h2>
         </div>
         <div class="space-y-4">
-          <div><label class="block text-xs font-bold mb-1">선생님 아이디</label><input type="text" id="login-id" value="teacher1" class="w-full rounded-xl border px-3.5 py-2.5 text-sm"></div>
+          <div><label class="block text-xs font-bold mb-1">아이디</label><input type="text" id="login-id" value="teacher1" class="w-full rounded-xl border px-3.5 py-2.5 text-sm"></div>
           <div><label class="block text-xs font-bold mb-1">비밀번호</label><input type="password" id="login-pw" value="1234" class="w-full rounded-xl border px-3.5 py-2.5 text-sm" onkeydown="if(event.key==='Enter') handleTeacherLogin()"></div>
-          <button onclick="handleTeacherLogin()" class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm">로그인하기</button>
+          <button onclick="handleTeacherLogin()" class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm">로그인</button>
         </div>
       </div>
 
@@ -243,22 +242,21 @@
             <div class="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-user-tie"></i></div>
             <div>
               <h2 id="teacher-welcome-name" class="text-lg font-bold"></h2>
-              <p class="text-xs text-slate-500">제출 과제 확인 · 오늘의 문제 출제(PDF) · 생기부 엑셀 출력</p>
+              <p class="text-xs text-slate-500">제출 과제 확인 · 오늘의 문제 출제 · 생기부 출력</p>
             </div>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <button onclick="showQRCodeModal()" class="px-3.5 py-2 bg-amber-50 text-amber-700 rounded-xl text-xs font-bold"><i class="fa-solid fa-qrcode mr-1"></i>QR코드</button>
             <button onclick="openModal('modal-api')" class="px-3.5 py-2 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold"><i class="fa-solid fa-brain mr-1"></i>AI 키설정</button>
-            <button onclick="openModal('modal-pw')" class="px-3.5 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold"><i class="fa-solid fa-lock mr-1"></i>비번변경</button>
             <button onclick="handleTeacherLogout()" class="px-3.5 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold">로그아웃</button>
             <button onclick="deleteAllTeacherSubmissions()" class="px-3.5 py-2 bg-rose-50 text-rose-600 rounded-xl text-xs font-bold border border-rose-200">과제 전체삭제</button>
           </div>
         </div>
 
         <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
-          <button id="subtab-submissions" onclick="switchTeacherSubtab('submissions')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white">1. 제출물 확인 (<span id="teacher-sub-count">0</span>)</button>
-          <button id="subtab-problem" onclick="switchTeacherSubtab('problem')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border">2. 오늘의 문제 (다중/PDF 지원)</button>
-          <button id="subtab-record" onclick="switchTeacherSubtab('record')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border">3. 생기부 엑셀(CSV) 다운로드</button>
+          <button id="subtab-submissions" onclick="switchTeacherSubtab('submissions')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white">1. 제출물 확인</button>
+          <button id="subtab-problem" onclick="switchTeacherSubtab('problem')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border">2. 오늘의 문제 등록</button>
+          <button id="subtab-record" onclick="switchTeacherSubtab('record')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border">3. 생기부 다운로드</button>
         </div>
 
         <div id="teacher-subview-submissions" class="grid grid-cols-1 lg:grid-cols-12 gap-6 block">
@@ -283,14 +281,14 @@
               <input type="text" id="tp-title" placeholder="문제 제목" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
               <textarea id="tp-desc" rows="4" oninput="previewTeacherProblem()" placeholder="문제 내용 (LaTeX $$...$$ 가능)" class="w-full rounded-xl border border-slate-300 p-3.5 text-sm focus:ring-2 focus:ring-indigo-500"></textarea>
               <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <label class="block text-xs font-bold text-slate-700 mb-2">문제 파일 첨부 (이미지 여러 장 및 PDF 지원)</label>
+                <label class="block text-xs font-bold text-slate-700 mb-2">문제 첨부 (이미지/PDF)</label>
                 <div class="flex flex-wrap gap-2 mb-3">
                   <input type="file" id="tp-file-input" accept="image/*,application/pdf" multiple class="force-hidden" onchange="handleTeacherProblemFiles(event)">
-                  <button type="button" onclick="document.getElementById('tp-file-input').click()" class="px-4 py-2 bg-white border hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold shadow-sm">파일 추가 (이미지 / PDF)</button>
+                  <button type="button" onclick="document.getElementById('tp-file-input').click()" class="px-4 py-2 bg-white border hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold shadow-sm">파일 추가</button>
                 </div>
                 <div id="tp-attachments-list" class="flex flex-col gap-2"></div>
               </div>
-              <button type="button" onclick="saveTeacherProblem()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition text-sm">저장 및 학생 화면에 게시하기</button>
+              <button type="button" onclick="saveTeacherProblem()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition text-sm">게시하기</button>
             </div>
             <div class="lg:col-span-6 bg-slate-100 rounded-2xl border border-slate-200 p-5 space-y-4">
               <span class="text-xs font-bold text-slate-500">학생 화면 상단 표시 미리보기</span>
@@ -306,8 +304,8 @@
         <div id="teacher-subview-record" class="force-hidden space-y-6">
           <div class="bg-white rounded-2xl shadow-sm border p-6 space-y-4">
             <div class="flex items-center justify-between border-b pb-4">
-              <h3 class="text-base font-bold"><i class="fa-solid fa-file-excel text-emerald-600 mr-2"></i>학급 전체 특기사항 일괄 생성 및 CSV 다운로드</h3>
-              <button onclick="downloadAllRecordsAsCSV()" class="px-4 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">전체 생기부 CSV 다운로드</button>
+              <h3 class="text-base font-bold"><i class="fa-solid fa-file-excel text-emerald-600 mr-2"></i>생기부 일괄 생성 및 다운로드</h3>
+              <button onclick="downloadAllRecordsAsCSV()" class="px-4 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs">CSV 다운로드</button>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs border-collapse">
@@ -321,24 +319,13 @@
     </section>
   </main>
 
-  <div id="modal-pw" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="display: none;">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl space-y-4">
-      <h3 class="font-bold text-base border-b pb-3">비밀번호 변경</h3>
-      <input type="password" id="pw-current" placeholder="현재 비번" class="w-full rounded-xl border px-3 py-2 text-sm mb-2">
-      <input type="password" id="pw-new" placeholder="새 비번" class="w-full rounded-xl border px-3 py-2 text-sm mb-2">
-      <div class="flex justify-end gap-2">
-        <button onclick="closeModal('modal-pw')" class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold">취소</button>
-        <button onclick="changeTeacherPassword()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">저장</button>
-      </div>
-    </div>
-  </div>
-
   <div id="modal-api" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="display: none;">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
       <h3 class="font-bold text-base border-b pb-3">고성능 AI 모델 설정 (Gemini)</h3>
       <select id="api-model-select" class="w-full rounded-xl border px-3 py-2 text-sm mb-2">
-        <option value="gemini-1.5-flash-latest" selected>Gemini 1.5 Flash (권장: 빠르고 정확)</option>
-        <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (고난도 정밀 첨삭)</option>
+        <!-- 꼬리표 없는 공식 기본 모델명으로 완전 고정 -->
+        <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash (안정성 권장)</option>
+        <option value="gemini-1.5-pro">Gemini 1.5 Pro (고난도)</option>
       </select>
       <input type="password" id="api-key-input" placeholder="API Key 입력" class="w-full rounded-xl border px-3 py-2 text-sm">
       <div class="flex justify-end gap-2 pt-2">
@@ -359,7 +346,7 @@
 
   <div id="fullscreen-warning-overlay" class="fixed inset-0 bg-red-950 z-50 flex-col justify-between p-6 sm:p-10 text-white overflow-y-auto" style="display: none;">
     <div class="flex items-center justify-between border-b border-red-800 pb-4">
-      <h2 id="fs-warning-title" class="text-2xl sm:text-3xl font-black">과제 미제출자 실시간 경고 화면</h2>
+      <h2 id="fs-warning-title" class="text-2xl sm:text-3xl font-black">과제 미제출자 실시간 경고</h2>
       <button onclick="toggleWarningFullscreen()" class="px-4 py-2 bg-white/10 rounded-xl text-sm font-bold border border-white/20">닫기</button>
     </div>
     <div class="my-auto py-8 text-center space-y-6">
@@ -383,8 +370,8 @@
       } 
     }
 
-    // [최종] v19로 버전 영구 고정
-    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v19', SUBMISSIONS: 'hw_ai_submissions_v19', PROBLEMS: 'hw_ai_problems_v19', API_KEY: 'hw_ai_gemini_key_v19', API_MODEL: 'hw_ai_gemini_model_v19', CURRENT_TEACHER: 'hw_ai_logged_teacher_v19' };
+    // [최종] v20 버전 적용 완료
+    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v20', SUBMISSIONS: 'hw_ai_submissions_v20', PROBLEMS: 'hw_ai_problems_v20', API_KEY: 'hw_ai_gemini_key_v20', API_MODEL: 'hw_ai_gemini_model_v20', CURRENT_TEACHER: 'hw_ai_logged_teacher_v20' };
 
     let teachers=[], submissions=[], teacherProblems={}, currentTeacher=null;
     let studentInputMode='pad', currentUploadedDataUrl='', selectedSubmissionId=null, tempTeacherAttachments=[];
@@ -393,13 +380,9 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const runSafe = (fn) => { try { fn(); } catch(e) { console.error("오류 발생:", e); } };
-      runSafe(initStorageData);
-      runSafe(populateSelectOptions);
-      runSafe(initDrawingPad);
-      runSafe(setupDragAndDropAndPaste);
-      runSafe(renderTeacherSelects);
-      runSafe(renderStudentProblemBanner);
-      runSafe(checkExistingTeacherSession);
+      runSafe(initStorageData); runSafe(populateSelectOptions); runSafe(initDrawingPad);
+      runSafe(setupDragAndDropAndPaste); runSafe(renderTeacherSelects);
+      runSafe(renderStudentProblemBanner); runSafe(checkExistingTeacherSession);
     });
 
     function initStorageData() {
@@ -414,24 +397,21 @@
       
       try {
         const apiEl = document.getElementById('api-key-input'); if(apiEl) apiEl.value = safeGetLocal(STORAGE_KEYS.API_KEY) || '';
-        const modelEl = document.getElementById('api-model-select'); if(modelEl) modelEl.value = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-1.5-flash-latest';
+        const modelEl = document.getElementById('api-model-select'); if(modelEl) modelEl.value = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-1.5-flash';
       } catch(e) {}
     }
 
     function populateSelectOptions() {
       const gSel = document.querySelectorAll('#stu-grade, #status-grade, #filter-grade');
       gSel.forEach(el => { let h=''; for(let g=1; g<=6; g++) h+=`<option value="${g}">${g}학년</option>`; el.innerHTML=h; });
-      
       const cSel = document.querySelectorAll('#stu-class, #status-class, #filter-class');
       cSel.forEach(el => { let h=''; for(let c=1; c<=20; c++) h+=`<option value="${c}">${c}반</option>`; el.innerHTML=h; });
-      
       const nSel = document.getElementById('stu-number');
       if(nSel) { let h=''; for(let n=1; n<=40; n++) h+=`<option value="${n}">${n}번</option>`; nSel.innerHTML=h; }
     }
 
     function renderTeacherSelects() {
-      let html = '';
-      if (teachers && teachers.length > 0) { teachers.forEach(t => html += `<option value="${t.id}">${t.name} (${t.id})</option>`); }
+      let html = ''; if (teachers && teachers.length > 0) { teachers.forEach(t => html += `<option value="${t.id}">${t.name} (${t.id})</option>`); }
       const stuTeacher = document.getElementById('stu-teacher-id'); if(stuTeacher) stuTeacher.innerHTML = html;
       const statusTeacher = document.getElementById('status-teacher-id'); if(statusTeacher) statusTeacher.innerHTML = html;
     }
@@ -452,7 +432,7 @@
           setDisplay('stu-prob-attachments', 'flex');
           prob.attachments.forEach(att => {
             if (att.type === 'image') attWrap.innerHTML += `<img src="${att.data}" class="max-h-40 rounded-xl border border-white/30 bg-white object-contain shadow-sm">`;
-            else if (att.type === 'pdf') attWrap.innerHTML += `<a href="${att.data}" download="${att.name}" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-rose-500/20 hover:bg-rose-500/40 border border-rose-400/50 text-rose-50 rounded-xl text-sm font-bold transition shadow-sm"><i class="fa-solid fa-file-pdf text-rose-300"></i>${att.name} 다운로드</a>`;
+            else if (att.type === 'pdf') attWrap.innerHTML += `<a href="${att.data}" download="${att.name}" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-rose-500/20 hover:bg-rose-500/40 border border-rose-400/50 text-rose-50 rounded-xl text-sm font-bold shadow-sm"><i class="fa-solid fa-file-pdf text-rose-300"></i>${att.name} 다운로드</a>`;
           });
         } else { setDisplay('stu-prob-attachments', 'none'); }
       }
@@ -464,7 +444,6 @@
       const plainProblem = prob.desc.replace(/\$\$/g, ' ').replace(/\$/g, '');
       padProblemHeaderText = `[오늘의 문제] ${prob.title} : ${plainProblem}`;
       clearDrawingCanvas(false);
-      
       const firstImage = prob.attachments?.find(a => a.type === 'image');
       if (firstImage) {
         const img = new Image(); img.onload = () => { padCtx.drawImage(img, padCanvas.width - 180, 48, 160, 100); saveCanvasState(); }; img.src = firstImage.data;
@@ -472,23 +451,18 @@
     }
 
     function setupDragAndDropAndPaste() {
-      const dropZone = document.getElementById('drop-zone');
-      if(!dropZone) return;
+      const dropZone = document.getElementById('drop-zone'); if(!dropZone) return;
       dropZone.addEventListener('click', () => { if (!currentUploadedDataUrl) document.getElementById('file-input').click(); });
       dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500', 'bg-indigo-50'); });
       dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-indigo-500', 'bg-indigo-50'); });
       dropZone.addEventListener('drop', (e) => {
         e.preventDefault(); dropZone.classList.remove('border-indigo-500', 'bg-indigo-50');
-        if(e.dataTransfer.files && e.dataTransfer.files[0]) {
-          switchStudentInputMode('upload'); handleFileSelect({ target: { files: e.dataTransfer.files } });
-        }
+        if(e.dataTransfer.files && e.dataTransfer.files[0]) { switchStudentInputMode('upload'); handleFileSelect({ target: { files: e.dataTransfer.files } }); }
       });
       window.addEventListener('paste', (e) => {
-        const items = e.clipboardData?.items || e.originalEvent?.clipboardData?.items;
-        if (!items) return;
+        const items = e.clipboardData?.items || e.originalEvent?.clipboardData?.items; if (!items) return;
         for (let i = 0; i < items.length; i++) {
-          let item = items[i];
-          if (item.type.indexOf('image') === 0) { switchStudentInputMode('upload'); handleFileSelect({ target: { files: [item.getAsFile()] } }); break; }
+          if (items[i].type.indexOf('image') === 0) { switchStudentInputMode('upload'); handleFileSelect({ target: { files: [items[i].getAsFile()] } }); break; }
         }
       });
     }
@@ -547,18 +521,14 @@
 
     function switchStudentInputMode(mode) {
       studentInputMode = mode; const isPad = mode === 'pad';
-      
       setDisplay('student-pad-container', isPad ? 'block' : 'none');
       setDisplay('student-upload-container', !isPad ? 'block' : 'none');
-      
       document.getElementById('input-mode-pad').className = isPad ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600';
       document.getElementById('input-mode-upload').className = !isPad ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600';
     }
 
     function switchMainRole(role) {
-      ['student', 'status', 'teacher'].forEach(v => { 
-        setDisplay(`view-${v}`, v === role ? 'block' : 'none');
-      });
+      ['student', 'status', 'teacher'].forEach(v => { setDisplay(`view-${v}`, v === role ? 'block' : 'none'); });
       if (role === 'student') renderStudentProblemBanner();
       if (role === 'status') renderSubmissionStatusBoard();
       if (role === 'teacher' && currentTeacher) { renderTeacherSubmissionsList(); renderBatchRecordTable(); }
@@ -578,16 +548,18 @@
       const img=new Image(); img.onload=()=>{ padCtx.clearRect(0,0,padCanvas.width,padCanvas.height); padCtx.drawImage(img,0,0); hasUserDrawnOnPad=true; saveCanvasState(); }; img.src=currentUploadedDataUrl;
     }
 
-    // [최종 완전수정] 가짜 피드백 완전 삭제! 키가 없거나 실패하면 반드시 에러를 화면에 띄웁니다.
+    // [최종 완료] API 버전에 존재하지 않는 -latest 꼬리표를 모두 제거하고 강제 설정합니다.
     async function getAiFeedbackForImage(dataUrl, studentInfo) {
       const apiKey = safeGetLocal(STORAGE_KEYS.API_KEY);
-      let modelName = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-1.5-flash-latest';
+      let modelName = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-1.5-flash';
 
-      if (modelName === 'gemini-1.5-flash') modelName = 'gemini-1.5-flash-latest';
-      if (modelName === 'gemini-1.5-pro') modelName = 'gemini-1.5-pro-latest';
+      // 저장된 모델명에 문제가 되는 latest가 남아있다면 제거합니다.
+      if (modelName.includes('latest')) {
+        modelName = modelName.replace('-latest', '');
+      }
 
       if (!apiKey || apiKey.trim().length < 10) {
-        throw new Error('API 키가 등록되지 않았습니다.\n우측 상단 [선생님 관리실] 탭으로 이동하여 [AI 키설정] 버튼을 누르고 발급받은 Gemini API 키를 저장해 주세요!');
+        throw new Error('API 키가 올바르게 등록되지 않았습니다.\n\n우측 상단 [선생님 관리실] 탭 ➔ [AI 키설정]에서 구글 API 키를 다시 한 번 정확히 저장해 주세요!');
       }
 
       const base64Data = dataUrl.split(',')[1];
@@ -621,7 +593,7 @@
         return text;
       } else {
         const reason = data.candidates?.[0]?.finishReason || '알 수 없음';
-        throw new Error(`AI가 안전 필터 또는 알 수 없는 이유로 답변 생성을 중단했습니다. (사유: ${reason})\n다른 사진으로 다시 시도해 주세요.`);
+        throw new Error(`AI가 안전 필터 또는 알 수 없는 이유로 답변 생성을 중단했습니다. (사유: ${reason})\n글씨가 잘 보이도록 사진을 다시 찍어 올려보세요.`);
       }
     }
 
@@ -647,7 +619,7 @@
         document.getElementById('fb-title').textContent = autoTitle;
         const fbContentEl = document.getElementById('fb-content'); fbContentEl.innerHTML = formatFeedbackHtml(feedback); renderMathInContainer(fbContentEl);
       } catch (e) { 
-        alert("피드백 생성 오류:\n" + e.message); 
+        alert(e.message); 
         setDisplay('feedback-loading', 'none'); 
         setDisplay('feedback-empty', 'flex'); 
       }
@@ -791,7 +763,7 @@
       safeSetLocal(STORAGE_KEYS.API_KEY, keyInput);
       safeSetLocal(STORAGE_KEYS.API_MODEL, modelSelect);
       closeModal('modal-api');
-      if (keyInput.length > 10) alert('Gemini API 키가 성공적으로 등록되었습니다! 이제 실제 AI가 손글씨를 판독합니다.');
+      if (keyInput.length > 10) alert('Gemini API 설정이 저장되었습니다!');
       else alert('API 키가 비워져 있습니다. [선생님 관리실]에서 정확한 키를 입력해 주세요!');
     }
     function changeTeacherPassword() { alert('비밀번호가 변경되었습니다!'); closeModal('modal-pw'); }
