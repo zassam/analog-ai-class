@@ -205,7 +205,7 @@
       </div>
     </section>
 
-    <!-- 현황판 및 관리실 등 나머지 UI 요소들 -->
+    <!-- 현황판 및 관리실 -->
     <section id="view-status" class="space-y-6 force-hidden">
       <div class="bg-white rounded-2xl shadow-sm border p-5 flex flex-wrap items-center justify-between gap-4">
         <div class="flex flex-wrap items-center gap-3">
@@ -321,15 +321,14 @@
   <div id="modal-api" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" style="display: none;">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
       <h3 class="font-bold text-base border-b pb-3">고성능 AI 모델 설정 (Gemini)</h3>
-      <!-- [최종] 3.0 모델로 완전 교체 -->
-      <select id="api-model-select" class="w-full rounded-xl border px-3 py-2 text-sm mb-2">
-        <option value="gemini-3.0-flash" selected>Gemini 3.0 Flash (최신 표준 모델)</option>
-        <option value="gemini-3.0-pro">Gemini 3.0 Pro (최신 고급 모델)</option>
+      <!-- [최종 v25] 로컬스토리지 영향 없이 2.5 플래시로 강제 고정합니다. -->
+      <select id="api-model-select" class="w-full rounded-xl border px-3 py-2 text-sm mb-2 bg-slate-100 text-slate-600 cursor-not-allowed" disabled>
+        <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (시스템 고정 - 권장 버전)</option>
       </select>
       <input type="password" id="api-key-input" placeholder="API Key 입력" class="w-full rounded-xl border px-3 py-2 text-sm">
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('modal-api')" class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold">닫기</button>
-        <button onclick="saveApiConfig()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">저장</button>
+        <button onclick="saveApiConfig()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold">API 키 저장</button>
       </div>
     </div>
   </div>
@@ -369,8 +368,8 @@
       } 
     }
 
-    // [최종] v24 버전 - 3.0 강제 적용
-    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v24', SUBMISSIONS: 'hw_ai_submissions_v24', PROBLEMS: 'hw_ai_problems_v24', API_KEY: 'hw_ai_gemini_key_v24', API_MODEL: 'hw_ai_gemini_model_v24', CURRENT_TEACHER: 'hw_ai_logged_teacher_v24' };
+    // [최종] v25 버전
+    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v25', SUBMISSIONS: 'hw_ai_submissions_v25', PROBLEMS: 'hw_ai_problems_v25', API_KEY: 'hw_ai_gemini_key_v25', CURRENT_TEACHER: 'hw_ai_logged_teacher_v25' };
 
     let teachers=[], submissions=[], teacherProblems={}, currentTeacher=null;
     let studentInputMode='pad', currentUploadedDataUrl='', selectedSubmissionId=null, tempTeacherAttachments=[];
@@ -396,8 +395,6 @@
       
       try {
         const apiEl = document.getElementById('api-key-input'); if(apiEl) apiEl.value = safeGetLocal(STORAGE_KEYS.API_KEY) || '';
-        // 3.0 버전으로 초기 세팅
-        const modelEl = document.getElementById('api-model-select'); if(modelEl) modelEl.value = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-3.0-flash';
       } catch(e) {}
     }
 
@@ -548,9 +545,10 @@
       const img=new Image(); img.onload=()=>{ padCtx.clearRect(0,0,padCanvas.width,padCanvas.height); padCtx.drawImage(img,0,0); hasUserDrawnOnPad=true; saveCanvasState(); }; img.src=currentUploadedDataUrl;
     }
 
+    // [최종 v25] 모델명을 강제로 gemini-2.5-flash로 고정하여 캐시/선택 간섭 원천 차단
     async function getAiFeedbackForImage(dataUrl, studentInfo) {
       const apiKey = safeGetLocal(STORAGE_KEYS.API_KEY);
-      let modelName = safeGetLocal(STORAGE_KEYS.API_MODEL) || 'gemini-3.0-flash';
+      const modelName = 'gemini-2.5-flash';
 
       if (!apiKey || apiKey.trim().length < 10) {
         throw new Error('API 키가 올바르게 등록되지 않았습니다.\n\n우측 상단 [선생님 관리실] 탭 ➔ [AI 키설정]에서 구글 API 키를 정확히 입력하고 저장해 주세요!');
@@ -587,7 +585,7 @@
         return text;
       } else {
         const reason = data.candidates?.[0]?.finishReason || '알 수 없음';
-        throw new Error(`AI가 안전 필터 또는 알 수 없는 이유로 답변 생성을 중단했습니다. (사유: ${reason})\n글씨가 잘 보이도록 사진을 다시 찍어 올려보세요.`);
+        throw new Error(`AI가 답변 생성을 중단했습니다. (사유: ${reason})\n글씨가 잘 보이도록 사진을 다시 찍어 올려보세요.`);
       }
     }
 
@@ -753,12 +751,10 @@
     
     function saveApiConfig() {
       const keyInput = document.getElementById('api-key-input').value.trim();
-      const modelSelect = document.getElementById('api-model-select').value;
       safeSetLocal(STORAGE_KEYS.API_KEY, keyInput);
-      safeSetLocal(STORAGE_KEYS.API_MODEL, modelSelect);
       closeModal('modal-api');
-      if (keyInput.length > 10) alert('Gemini API 설정이 저장되었습니다!');
-      else alert('API 키가 비워져 있습니다. [선생님 관리실]에서 정확한 키를 입력해 주세요!');
+      if (keyInput.length > 10) alert('API 키 설정이 저장되었습니다!');
+      else alert('API 키가 비워져 있습니다. 정확한 키를 입력해 주세요!');
     }
     function changeTeacherPassword() { alert('비밀번호가 변경되었습니다!'); closeModal('modal-pw'); }
     function deleteAllTeacherSubmissions() { if(!confirm('정말 삭제하시겠습니까?')) return; submissions = submissions.filter(s=>s.teacherId!==currentTeacher.id); safeSetLocal(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(submissions)); renderTeacherSubmissionsList(); }
