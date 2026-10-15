@@ -42,14 +42,15 @@
         </div>
       </div>
       <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl">
-        <button id="tab-student" onclick="switchMainRole('student')" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-indigo-600 shadow-sm"><i class="fa-solid fa-user-graduate mr-1.5"></i>학생 제출</button>
-        <button id="tab-status" onclick="switchMainRole('status')" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900"><i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-500"></i>제출 현황</button>
-        <button id="tab-teacher" onclick="switchMainRole('teacher')" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900"><i class="fa-solid fa-chalkboard-user mr-1.5"></i>선생님 관리실</button>
+        <button id="tab-student" onclick="switchMainRole('student')" class="px-4 py-2 rounded-lg text-sm font-bold bg-white text-indigo-700 shadow-sm transition-all duration-200"><i class="fa-solid fa-user-graduate mr-1.5"></i>학생 제출</button>
+        <button id="tab-status" onclick="switchMainRole('status')" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-all duration-200"><i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-500"></i>제출 현황</button>
+        <button id="tab-teacher" onclick="switchMainRole('teacher')" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-all duration-200"><i class="fa-solid fa-chalkboard-user mr-1.5"></i>선생님 관리실</button>
       </div>
     </div>
   </header>
 
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
+    <!-- 학생 화면 -->
     <section id="view-student" class="space-y-6 block">
       <div id="student-problem-banner" class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white rounded-2xl p-5 shadow-md border border-indigo-700">
         <div class="flex flex-col lg:flex-row justify-between gap-5">
@@ -142,7 +143,7 @@
             </div>
 
             <div id="student-upload-container" class="force-hidden">
-              <div id="drop-zone" class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-50/70">
+              <div id="drop-zone" class="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-50/70 transition-colors">
                 <div id="upload-placeholder" class="space-y-4 py-4 block">
                   <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-cloud-arrow-up"></i></div>
                   <div>
@@ -150,11 +151,11 @@
                     <p class="text-xs text-slate-500 mt-1">화면 캡처 후 Ctrl + V 로 붙여넣기도 가능합니다!</p>
                   </div>
                   <div class="flex flex-wrap justify-center gap-2 relative z-20">
-                    <label class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer shadow-sm flex items-center">
+                    <label class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer shadow-sm flex items-center transition">
                       <i class="fa-regular fa-folder-open mr-1 text-indigo-600"></i>파일 첨부하기
                       <input type="file" accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
                     </label>
-                    <label class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer shadow-sm flex items-center">
+                    <label class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer shadow-sm flex items-center transition">
                       <i class="fa-solid fa-camera mr-1 text-emerald-600"></i>카메라 촬영
                       <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleFileSelect(event)">
                     </label>
@@ -272,15 +273,17 @@
         </div>
 
         <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
-          <button id="subtab-submissions" onclick="switchTeacherSubtab('submissions')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white">1. 문항별 제출물 확인</button>
-          <button id="subtab-problem" onclick="switchTeacherSubtab('problem')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border">2. 오늘의 문제 등록</button>
-          <button id="subtab-record" onclick="switchTeacherSubtab('record')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border">3. 생기부 특기사항 다운로드</button>
+          <button id="subtab-submissions" onclick="switchTeacherSubtab('submissions')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white transition-colors">1. 문항별 제출 확인</button>
+          <button id="subtab-student-view" onclick="switchTeacherSubtab('student-view')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border transition-colors">2. 학생별 모아보기</button>
+          <button id="subtab-problem" onclick="switchTeacherSubtab('problem')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border transition-colors">3. 오늘의 문제 등록</button>
+          <button id="subtab-record" onclick="switchTeacherSubtab('record')" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border transition-colors">4. 생기부 특기사항 다운로드</button>
         </div>
 
+        <!-- 1. 문항별 제출 확인 -->
         <div id="teacher-subview-submissions" class="grid grid-cols-1 lg:grid-cols-12 gap-6 block">
           <div class="lg:col-span-5 bg-white rounded-2xl shadow-sm border p-5 flex flex-col max-h-[700px]">
-            <div class="flex justify-between pb-3 mb-3 border-b"><h3 class="font-bold text-sm">학생 제출 목록 (최신순)</h3></div>
-            <div id="teacher-submission-list" class="flex-1 overflow-y-auto space-y-2.5"></div>
+            <div class="flex justify-between pb-3 mb-3 border-b"><h3 class="font-bold text-sm">최신 문항 제출 목록</h3></div>
+            <div id="teacher-submission-list" class="flex-1 overflow-y-auto space-y-2.5 pr-2"></div>
           </div>
           <div class="lg:col-span-7 bg-white rounded-2xl shadow-sm border p-6">
             <div id="teacher-detail-empty" class="py-24 text-center text-slate-400 block"><p class="text-sm font-semibold">왼쪽 목록에서 과제를 클릭하세요.</p></div>
@@ -292,22 +295,42 @@
           </div>
         </div>
 
+        <!-- 2. 학생별 모아보기 -->
+        <div id="teacher-subview-student-view" class="force-hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-4 bg-white rounded-2xl shadow-sm border p-5 flex flex-col max-h-[700px]">
+            <div class="flex justify-between pb-3 mb-3 border-b"><h3 class="font-bold text-sm">제출 학생 목록</h3></div>
+            <div id="teacher-student-list" class="flex-1 overflow-y-auto space-y-2.5 pr-2"></div>
+          </div>
+          <div class="lg:col-span-8 bg-white rounded-2xl shadow-sm border p-6 flex flex-col max-h-[700px]">
+            <div id="teacher-student-detail-empty" class="py-24 text-center text-slate-400 block"><p class="text-sm font-semibold">왼쪽 목록에서 학생을 클릭하세요.</p></div>
+            <div id="teacher-student-detail-content" class="force-hidden flex-1 overflow-y-auto space-y-6 pr-3"></div>
+          </div>
+        </div>
+
+        <!-- 3. 오늘의 문제 등록 (드래그 앤 드롭 존 추가) -->
         <div id="teacher-subview-problem" class="force-hidden">
           <div class="bg-white rounded-2xl shadow-sm border p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div class="lg:col-span-6 space-y-4">
-              <h3 class="text-lg font-bold text-slate-900">오늘의 문제 등록 (PDF 업로드 지원)</h3>
-              <input type="text" id="tp-title" placeholder="문제 제목" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
-              <textarea id="tp-desc" rows="4" oninput="previewTeacherProblem()" placeholder="문제 내용 (LaTeX $$...$$ 가능)" class="w-full rounded-xl border border-slate-300 p-3.5 text-sm focus:ring-2 focus:ring-indigo-500"></textarea>
-              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <label class="block text-xs font-bold text-slate-700 mb-2">문제 첨부 (이미지/PDF)</label>
-                <div class="flex flex-wrap gap-2 mb-3">
-                  <label class="px-4 py-2 bg-white border hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold shadow-sm cursor-pointer">
-                    파일 추가
+              <h3 class="text-lg font-bold text-slate-900">오늘의 문제 등록</h3>
+              <input type="text" id="tp-title" placeholder="문제 제목 (예: 3단원 방정식 5번)" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+              <textarea id="tp-desc" rows="4" oninput="previewTeacherProblem()" placeholder="문제 부연 설명 (LaTeX $$...$$ 가능)" class="w-full rounded-xl border border-slate-300 p-3.5 text-sm focus:ring-2 focus:ring-indigo-500"></textarea>
+              
+              <!-- [핵심 변경] 선생님용 드래그 앤 드롭 존 -->
+              <div id="tp-drop-zone" class="bg-slate-50 p-6 rounded-xl border-2 border-dashed border-slate-300 transition-colors">
+                <div class="text-center mb-3">
+                  <i class="fa-solid fa-cloud-arrow-up text-3xl text-indigo-300 mb-2"></i>
+                  <p class="text-sm font-bold text-slate-700">문제 파일을 이곳에 드래그하거나 아래 버튼으로 첨부하세요</p>
+                  <p class="text-[11px] text-slate-500 mt-1">이미지 및 PDF 파일 지원</p>
+                </div>
+                <div class="flex flex-wrap justify-center gap-2 mb-3">
+                  <label class="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold shadow-sm cursor-pointer transition">
+                    파일 선택하기
                     <input type="file" accept="image/*,application/pdf" multiple style="display:none;" onchange="handleTeacherProblemFiles(event)">
                   </label>
                 </div>
                 <div id="tp-attachments-list" class="flex flex-col gap-2"></div>
               </div>
+
               <button type="button" onclick="saveTeacherProblem()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition text-sm">게시하기</button>
             </div>
             <div class="lg:col-span-6 bg-slate-100 rounded-2xl border border-slate-200 p-5 space-y-4">
@@ -321,6 +344,7 @@
           </div>
         </div>
 
+        <!-- 4. 생기부 관리 -->
         <div id="teacher-subview-record" class="force-hidden space-y-6">
           <div class="bg-white rounded-2xl shadow-sm border p-6 space-y-4">
             <div class="flex items-center justify-between border-b pb-4">
@@ -342,7 +366,7 @@
     </section>
   </main>
 
-  <!-- 모달 및 오버레이 -->
+  <!-- 학생용 내 제출 내역 모달 -->
   <div id="modal-student-subs" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm" style="display: none;">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl flex flex-col max-h-[80vh]">
       <div class="flex justify-between items-center border-b pb-3 mb-4">
@@ -418,7 +442,8 @@
       } 
     }
 
-    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v31', API_KEY: 'hw_ai_gemini_key_v31', CURRENT_TEACHER: 'hw_ai_logged_teacher_v31' };
+    // 버전 35
+    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v35', API_KEY: 'hw_ai_gemini_key_v35', CURRENT_TEACHER: 'hw_ai_logged_teacher_v35' };
 
     let teachers=[], submissions=[], teacherProblems={}, currentTeacher=null;
     let studentInputMode='pad', currentUploadedDataUrl='', tempTeacherAttachments=[];
@@ -426,7 +451,27 @@
     let canvasHistory=[], hasUserDrawnOnPad=false, padProblemHeaderText='';
     let editingSubId = null; 
 
-    window.switchMainRole = switchMainRole;
+    window.switchMainRole = function(role) {
+      ['student', 'status', 'teacher'].forEach(v => {
+        setDisplay(`view-${v}`, v === role ? 'block' : 'none');
+        const btn = document.getElementById(`tab-${v}`);
+        if(btn) {
+          if (v === role) {
+            btn.className = 'px-4 py-2 rounded-lg text-sm font-bold bg-white text-indigo-700 shadow-sm transition-all duration-200';
+          } else {
+            btn.className = 'px-4 py-2 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-200/50 transition-all duration-200';
+          }
+        }
+      });
+      if (role === 'student') renderStudentProblemBanner();
+      if (role === 'status') renderSubmissionStatusBoard();
+      if (role === 'teacher' && currentTeacher) { 
+        renderTeacherSubmissionsList(); 
+        renderTeacherStudentList();
+        renderBatchRecordTable(); 
+      }
+    };
+    
     window.applyProblemToCanvasAndForm = applyProblemToCanvasAndForm;
     window.switchStudentInputMode = switchStudentInputMode;
     window.setPenTool = setPenTool;
@@ -459,6 +504,8 @@
     window.showQRCodeModal = showQRCodeModal;
     window.saveApiConfig = saveApiConfig;
     window.deleteAllTeacherSubmissions = deleteAllTeacherSubmissions;
+    window.renderTeacherStudentList = renderTeacherStudentList;
+    window.selectStudentDetail = selectStudentDetail;
 
     window.addEventListener('DOMContentLoaded', () => {
       initLocalData(); 
@@ -468,6 +515,7 @@
       renderTeacherSelects();
       checkExistingTeacherSession();
       initFirebaseListeners();
+      window.switchMainRole('student');
     });
 
     function initLocalData() {
@@ -488,6 +536,7 @@
         if(document.getElementById('view-status').style.display !== 'none') renderSubmissionStatusBoard();
         if(document.getElementById('view-teacher').style.display !== 'none' && currentTeacher) {
           renderTeacherSubmissionsList();
+          renderTeacherStudentList();
           renderBatchRecordTable();
         }
       });
@@ -525,7 +574,7 @@
       
       const titleEl = document.getElementById('stu-prob-title'); if(titleEl) titleEl.textContent = prob.title;
       const descEl = document.getElementById('stu-prob-desc');
-      if(descEl) { descEl.innerHTML = formatFeedbackHtml(prob.desc); renderMathInContainer(descEl); }
+      if(descEl) { descEl.innerHTML = formatFeedbackHtml(prob.desc, true); renderMathInContainer(descEl); }
       
       const attWrap = document.getElementById('stu-prob-attachments');
       if(attWrap) {
@@ -552,14 +601,38 @@
       } else { saveCanvasState(); }
     }
 
+    // [핵심 패치] 드래그 앤 드롭 영역 이벤트 설정 추가
     function setupDragAndDropAndPaste() {
-      const dropZone = document.getElementById('drop-zone'); if(!dropZone) return;
-      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500', 'bg-indigo-50'); });
-      dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-indigo-500', 'bg-indigo-50'); });
-      dropZone.addEventListener('drop', (e) => {
-        e.preventDefault(); dropZone.classList.remove('border-indigo-500', 'bg-indigo-50');
-        if(e.dataTransfer.files && e.dataTransfer.files[0]) { switchStudentInputMode('upload'); handleFileSelect({ target: { files: e.dataTransfer.files } }); }
-      });
+      // 1. 학생 화면 제출용 드롭존
+      const dropZone = document.getElementById('drop-zone'); 
+      if(dropZone) {
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500', 'bg-indigo-50'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-indigo-500', 'bg-indigo-50'); });
+        dropZone.addEventListener('drop', (e) => {
+          e.preventDefault(); dropZone.classList.remove('border-indigo-500', 'bg-indigo-50');
+          if(e.dataTransfer.files && e.dataTransfer.files[0]) { switchStudentInputMode('upload'); handleFileSelect({ target: { files: e.dataTransfer.files } }); }
+        });
+      }
+
+      // 2. 선생님 문제 등록용 드롭존
+      const tpDropZone = document.getElementById('tp-drop-zone');
+      if(tpDropZone) {
+        tpDropZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          tpDropZone.classList.add('border-indigo-500', 'bg-indigo-50');
+        });
+        tpDropZone.addEventListener('dragleave', () => {
+          tpDropZone.classList.remove('border-indigo-500', 'bg-indigo-50');
+        });
+        tpDropZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          tpDropZone.classList.remove('border-indigo-500', 'bg-indigo-50');
+          if(e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleTeacherProblemFiles({ target: { files: e.dataTransfer.files } });
+          }
+        });
+      }
+
       window.addEventListener('paste', (e) => {
         const items = e.clipboardData?.items || e.originalEvent?.clipboardData?.items; if (!items) return;
         for (let i = 0; i < items.length; i++) {
@@ -582,7 +655,7 @@
           document.getElementById('upload-preview-img').src = currentUploadedDataUrl;
         }; img.src = e.target.result;
       }; reader.readAsDataURL(file);
-      event.target.value = ''; 
+      if(event.target.value !== undefined) event.target.value = ''; 
     }
 
     function clearUploadedImage() {
@@ -624,15 +697,11 @@
       studentInputMode = mode; const isPad = mode === 'pad';
       setDisplay('student-pad-container', isPad ? 'block' : 'none');
       setDisplay('student-upload-container', !isPad ? 'block' : 'none');
-      document.getElementById('input-mode-pad').className = isPad ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600';
-      document.getElementById('input-mode-upload').className = !isPad ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600';
-    }
-
-    function switchMainRole(role) {
-      ['student', 'status', 'teacher'].forEach(v => { setDisplay(`view-${v}`, v === role ? 'block' : 'none'); });
-      if (role === 'student') renderStudentProblemBanner();
-      if (role === 'status') renderSubmissionStatusBoard();
-      if (role === 'teacher' && currentTeacher) { renderTeacherSubmissionsList(); renderBatchRecordTable(); }
+      
+      const btnPad = document.getElementById('input-mode-pad');
+      const btnUp = document.getElementById('input-mode-upload');
+      if(btnPad) btnPad.className = isPad ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600';
+      if(btnUp) btnUp.className = !isPad ? 'px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm' : 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600';
     }
 
     function renderMathInContainer(element) { 
@@ -649,9 +718,15 @@
       }
     }
 
-    function formatFeedbackHtml(txt) {
+    function formatFeedbackHtml(txt, isStudentView = false) {
       if(!txt) return '';
-      return txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      let res = txt;
+      
+      if (isStudentView) {
+        res = res.split(/###\s*5\.?\s*생기부\s*기록/)[0].trim();
+      }
+
+      return res.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
                 .replace(/```math/g, '').replace(/```/g, '') 
                 .replace(/\*\*(.+?)\*\*/g, '<strong class="text-indigo-900 bg-indigo-100/60 px-1 rounded">$1</strong>')
                 .replace(/^### (.+)$/gm, '<h4 class="font-extrabold text-indigo-800 mt-4 mb-1">$1</h4>');
@@ -745,7 +820,6 @@
       const base64Data = dataUrl.split(',')[1];
       const mimeType = dataUrl.substring(dataUrl.indexOf(':') + 1, dataUrl.indexOf(';')) || 'image/jpeg';
       
-      // [패치] 제외 로직 삭제 및 무조건적인 긍정/구체적 작성 지시
       const prompt = `당신은 대한민국 학생을 가르치는 다정한 AI 수학 선생님입니다. 학생 이름: ${studentInfo.name}, 과제: ${studentInfo.title}. 첨부된 손글씨 이미지를 판독하여 한국어 피드백을 작성해 주세요. 수식은 반드시 LaTeX 기호($...$ 또는 $$...$$)를 사용하세요.
 
 ### 1. 반가운 인사와 칭찬
@@ -822,7 +896,11 @@
         
         setDisplay('feedback-loading', 'none'); setDisplay('feedback-result', 'block');
         document.getElementById('fb-title').textContent = autoTitle;
-        const fbContentEl = document.getElementById('fb-content'); fbContentEl.innerHTML = formatFeedbackHtml(feedback); renderMathInContainer(fbContentEl);
+        
+        const fbContentEl = document.getElementById('fb-content'); 
+        fbContentEl.innerHTML = formatFeedbackHtml(feedback, true); 
+        renderMathInContainer(fbContentEl);
+
       } catch (e) { 
         alert(e.message); 
         setDisplay('feedback-loading', 'none'); 
@@ -837,7 +915,9 @@
     function showTeacherDashboard() { 
       setDisplay('teacher-login-box', 'none'); setDisplay('teacher-dashboard', 'block');
       document.getElementById('teacher-welcome-name').textContent = currentTeacher.name + ' 관리실'; 
-      renderTeacherSubmissionsList(); renderBatchRecordTable(); 
+      renderTeacherSubmissionsList(); 
+      renderTeacherStudentList();
+      renderBatchRecordTable(); 
     }
     
     function handleTeacherLogout() { 
@@ -846,12 +926,13 @@
     }
 
     function switchTeacherSubtab(tab) {
-      ['submissions','problem','record'].forEach(t => {
-        setDisplay(`teacher-subview-${t}`, t === tab ? (t === 'submissions' ? 'grid' : 'block') : 'none');
+      ['submissions', 'student-view', 'problem', 'record'].forEach(t => {
+        setDisplay(`teacher-subview-${t}`, t === tab ? (t === 'submissions' || t === 'student-view' ? 'grid' : 'block') : 'none');
         const btn = document.getElementById(`subtab-${t}`);
-        if(btn) btn.className = t===tab ? 'px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white' : 'px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border';
+        if(btn) btn.className = t === tab ? 'px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white' : 'px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border';
       });
       if(tab === 'problem') loadTeacherProblemForm();
+      if(tab === 'student-view') renderTeacherStudentList();
     }
 
     function loadTeacherProblemForm() {
@@ -862,7 +943,8 @@
     }
 
     function handleTeacherProblemFiles(e) {
-      const files = e.target.files; if (!files || files.length === 0) return;
+      const files = e.target.files || (e.dataTransfer && e.dataTransfer.files); 
+      if (!files || files.length === 0) return;
       Array.from(files).forEach(file => {
         const reader = new FileReader();
         reader.onload = (ev) => {
@@ -872,14 +954,14 @@
         };
         reader.readAsDataURL(file);
       });
-      e.target.value = ''; 
+      if(e.target.value !== undefined) e.target.value = ''; 
     }
 
     function removeAttachment(id) { tempTeacherAttachments = tempTeacherAttachments.filter(a => a.id !== id); previewTeacherProblem(); }
 
     function previewTeacherProblem() {
       document.getElementById('tp-preview-title').textContent = document.getElementById('tp-title').value.trim() || '제목 없음';
-      const descEl = document.getElementById('tp-preview-desc'); descEl.innerHTML = formatFeedbackHtml(document.getElementById('tp-desc').value.trim()); renderMathInContainer(descEl);
+      const descEl = document.getElementById('tp-preview-desc'); descEl.innerHTML = formatFeedbackHtml(document.getElementById('tp-desc').value.trim(), false); renderMathInContainer(descEl);
       const listWrap = document.getElementById('tp-attachments-list'); listWrap.innerHTML = '';
       tempTeacherAttachments.forEach(att => {
         const icon = att.type === 'pdf' ? '<i class="fa-solid fa-file-pdf text-rose-500 mr-2 text-lg"></i>' : '<i class="fa-solid fa-image text-indigo-500 mr-2 text-lg"></i>';
@@ -918,7 +1000,73 @@
       const item = submissions.find(s=>s.id===id); if(!item) return;
       setDisplay('teacher-detail-empty', 'none'); setDisplay('teacher-detail-content', 'block');
       document.getElementById('td-title').textContent = item.title; document.getElementById('td-image').src = item.imageData;
-      const fb = document.getElementById('td-feedback'); fb.innerHTML = formatFeedbackHtml(item.feedback); renderMathInContainer(fb);
+      const fb = document.getElementById('td-feedback'); 
+      fb.innerHTML = formatFeedbackHtml(item.feedback, false); 
+      renderMathInContainer(fb);
+    }
+
+    function renderTeacherStudentList() {
+      if(!currentTeacher) return;
+      const listEl = document.getElementById('teacher-student-list'); listEl.innerHTML = '';
+      const list = submissions.filter(s => s.teacherId === currentTeacher.id);
+      
+      const groups = {};
+      list.forEach(s => {
+        const k = `${s.grade}_${s.classNum}_${s.number}_${s.name}`;
+        if(!groups[k]) groups[k] = [];
+        groups[k].push(s);
+      });
+
+      const sortedKeys = Object.keys(groups).sort((a,b) => {
+         const pa = a.split('_').map(Number);
+         const pb = b.split('_').map(Number);
+         if(pa[0] !== pb[0]) return pa[0] - pb[0];
+         if(pa[1] !== pb[1]) return pa[1] - pb[1];
+         return pa[2] - pb[2];
+      });
+
+      sortedKeys.forEach(k => {
+        const pts = k.split('_');
+        const count = groups[k].length;
+        listEl.innerHTML += `<div onclick="selectStudentDetail('${k}')" class="p-3 border rounded-xl bg-slate-50 mb-2 cursor-pointer hover:bg-slate-100"><div class="font-bold flex items-center justify-between"><span>${pts[0]}학년 ${pts[1]}반 ${pts[2]}번 ${pts[3]}</span> <span class="text-xs font-extrabold text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded">총 ${count}문항</span></div></div>`;
+      });
+      
+      if(sortedKeys.length > 0) {
+        selectStudentDetail(sortedKeys[0]);
+      } else {
+         setDisplay('teacher-student-detail-empty', 'block');
+         setDisplay('teacher-student-detail-content', 'none');
+      }
+    }
+
+    function selectStudentDetail(k) {
+      const list = submissions.filter(s => s.teacherId === currentTeacher.id);
+      const mySubs = list.filter(s => `${s.grade}_${s.classNum}_${s.number}_${s.name}` === k);
+      
+      setDisplay('teacher-student-detail-empty', 'none'); 
+      setDisplay('teacher-student-detail-content', 'block');
+      
+      const contentEl = document.getElementById('teacher-student-detail-content');
+      const pts = k.split('_');
+      
+      let html = `<div class="sticky top-0 bg-white z-10 pb-3 border-b mb-4"><h3 class="text-lg font-black text-slate-900"><i class="fa-solid fa-user-graduate text-indigo-600 mr-2"></i>${pts[0]}학년 ${pts[1]}반 ${pts[2]}번 ${pts[3]} <span class="text-sm font-semibold text-slate-500 ml-2">(총 ${mySubs.length}문항 제출)</span></h3></div>`;
+      
+      mySubs.forEach(sub => {
+        html += `
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm">
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200">
+              <h4 class="font-bold text-indigo-900 text-base">${sub.title}</h4>
+              <span class="text-xs text-slate-500">${sub.createdAt}</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div><img src="${sub.imageData}" class="w-full rounded-lg bg-white shadow-sm border object-contain max-h-[400px]"></div>
+              <div class="bg-amber-50/50 border border-amber-200 rounded-xl p-4 text-sm leading-relaxed whitespace-pre-wrap overflow-y-auto max-h-[400px]">${formatFeedbackHtml(sub.feedback, false)}</div>
+            </div>
+          </div>
+        `;
+      });
+      contentEl.innerHTML = html;
+      renderMathInContainer(contentEl); 
     }
 
     function renderSubmissionStatusBoard() {
@@ -949,7 +1097,6 @@
       if(el.style.display === 'none') { renderSubmissionStatusBoard(); el.style.display = 'flex'; } else { el.style.display = 'none'; }
     }
 
-    // [패치] 다운로드 시 '제외' 필터링 삭제, 추출된 내용은 모두 CSV에 반영
     function downloadAllRecordsAsCSV() {
       const rows = ["학년,반,번호,이름,총 제출문항수,생기부 특기사항 요약"];
       const groups = {}; 
@@ -978,7 +1125,6 @@
       const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = '학생별_수학_생기부.csv'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
     
-    // [패치] 화면 표출 시 '제외' 필터링 삭제, 모든 생성된 생기부 문구를 누적 표시
     function renderBatchRecordTable() {
       const tb = document.getElementById('batch-record-tbody'); if(!tb) return; tb.innerHTML='';
       if(!currentTeacher) return;
