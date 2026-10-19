@@ -246,12 +246,14 @@
       <div id="teacher-login-box" class="max-w-md mx-auto bg-white rounded-2xl shadow-md border p-8 mt-6 block">
         <div class="text-center mb-6">
           <div class="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-2xl mx-auto mb-3"><i class="fa-solid fa-user-lock"></i></div>
-          <h2 class="text-xl font-bold text-slate-900">선생님 전용 관리실 로그인</h2>
+          <h2 class="text-xl font-bold text-slate-900">개인 전용 관리실 로그인</h2>
         </div>
         <div class="space-y-4">
-          <div><label class="block text-xs font-bold mb-1">아이디</label><input type="text" id="login-id" value="teacher1" class="w-full rounded-xl border px-3.5 py-2.5 text-sm"></div>
-          <div><label class="block text-xs font-bold mb-1">비밀번호</label><input type="password" id="login-pw" value="1234" class="w-full rounded-xl border px-3.5 py-2.5 text-sm" onkeydown="if(event.key==='Enter') handleTeacherLogin()"></div>
-          <button onclick="handleTeacherLogin()" class="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm">로그인</button>
+          <!-- 변경 1. 기본 아이디를 almost_ajae로 미리 채워둡니다 -->
+          <div><label class="block text-xs font-bold mb-1">아이디</label><input type="text" id="login-id" value="almost_ajae" class="w-full rounded-xl border px-3.5 py-2.5 text-sm focus:border-indigo-500 outline-none"></div>
+          <!-- 변경 2. 비밀번호 입력란을 비워두어 원하시는 비밀번호를 치고 들어갈 수 있게 합니다 -->
+          <div><label class="block text-xs font-bold mb-1">비밀번호</label><input type="password" id="login-pw" placeholder="비밀번호 입력" class="w-full rounded-xl border px-3.5 py-2.5 text-sm focus:border-indigo-500 outline-none" onkeydown="if(event.key==='Enter') handleTeacherLogin()"></div>
+          <button onclick="handleTeacherLogin()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition">로그인</button>
         </div>
       </div>
 
@@ -307,7 +309,7 @@
           </div>
         </div>
 
-        <!-- 3. 오늘의 문제 등록 (드래그 앤 드롭 존 추가) -->
+        <!-- 3. 오늘의 문제 등록 (드래그 앤 드롭 존 포함) -->
         <div id="teacher-subview-problem" class="force-hidden">
           <div class="bg-white rounded-2xl shadow-sm border p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div class="lg:col-span-6 space-y-4">
@@ -315,7 +317,6 @@
               <input type="text" id="tp-title" placeholder="문제 제목 (예: 3단원 방정식 5번)" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
               <textarea id="tp-desc" rows="4" oninput="previewTeacherProblem()" placeholder="문제 부연 설명 (LaTeX $$...$$ 가능)" class="w-full rounded-xl border border-slate-300 p-3.5 text-sm focus:ring-2 focus:ring-indigo-500"></textarea>
               
-              <!-- [핵심 변경] 선생님용 드래그 앤 드롭 존 -->
               <div id="tp-drop-zone" class="bg-slate-50 p-6 rounded-xl border-2 border-dashed border-slate-300 transition-colors">
                 <div class="text-center mb-3">
                   <i class="fa-solid fa-cloud-arrow-up text-3xl text-indigo-300 mb-2"></i>
@@ -442,8 +443,8 @@
       } 
     }
 
-    // 버전 35
-    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_v35', API_KEY: 'hw_ai_gemini_key_v35', CURRENT_TEACHER: 'hw_ai_logged_teacher_v35' };
+    // 버전명은 개인용 v35를 나타내도록 변경하여 깔끔하게 독립시켰습니다.
+    const STORAGE_KEYS = { TEACHERS: 'hw_ai_teachers_personal', API_KEY: 'hw_ai_gemini_key_personal', CURRENT_TEACHER: 'hw_ai_logged_teacher_personal' };
 
     let teachers=[], submissions=[], teacherProblems={}, currentTeacher=null;
     let studentInputMode='pad', currentUploadedDataUrl='', tempTeacherAttachments=[];
@@ -520,7 +521,10 @@
 
     function initLocalData() {
       try { const savedT = safeGetLocal(STORAGE_KEYS.TEACHERS); teachers = savedT ? JSON.parse(savedT) : null; } catch(e) { teachers = null; }
-      if (!Array.isArray(teachers) || teachers.length === 0) teachers = [{ id: 'teacher1', name: '김수학 선생님 (기본)', password: '1234' }];
+      
+      // [변경 포인트] 선생님만의 개인 전용 아이디와 비밀번호를 이곳에서 직접 수정하실 수 있습니다.
+      if (!Array.isArray(teachers) || teachers.length === 0) teachers = [{ id: 'almost_ajae', name: '김경석 선생님', password: '0000' }];
+      
       try { const apiEl = document.getElementById('api-key-input'); if(apiEl) apiEl.value = safeGetLocal(STORAGE_KEYS.API_KEY) || ''; } catch(e) {}
     }
 
@@ -562,7 +566,7 @@
     }
 
     function renderTeacherSelects() {
-      let html = ''; if (teachers && teachers.length > 0) { teachers.forEach(t => html += `<option value="${t.id}">${t.name} (${t.id})</option>`); }
+      let html = ''; if (teachers && teachers.length > 0) { teachers.forEach(t => html += `<option value="${t.id}">${t.name}</option>`); }
       const stuTeacher = document.getElementById('stu-teacher-id'); if(stuTeacher) stuTeacher.innerHTML = html;
       const statusTeacher = document.getElementById('status-teacher-id'); if(statusTeacher) statusTeacher.innerHTML = html;
     }
@@ -601,9 +605,7 @@
       } else { saveCanvasState(); }
     }
 
-    // [핵심 패치] 드래그 앤 드롭 영역 이벤트 설정 추가
     function setupDragAndDropAndPaste() {
-      // 1. 학생 화면 제출용 드롭존
       const dropZone = document.getElementById('drop-zone'); 
       if(dropZone) {
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500', 'bg-indigo-50'); });
@@ -614,7 +616,6 @@
         });
       }
 
-      // 2. 선생님 문제 등록용 드롭존
       const tpDropZone = document.getElementById('tp-drop-zone');
       if(tpDropZone) {
         tpDropZone.addEventListener('dragover', (e) => {
@@ -709,7 +710,7 @@
         renderMathInElement(element, { 
           delimiters: [
             {left: '$$', right: '$$', display: true},
-            {left: '[', right: ']', display: true},
+            {left: '\\[', right: '\\]', display: true},
             {left: '$', right: '$', display: false},
             {left: '\\(', right: '\\)', display: false}
           ], 
@@ -910,7 +911,23 @@
     }
 
     function checkExistingTeacherSession() { const savedId = safeGetSession(STORAGE_KEYS.CURRENT_TEACHER); if (savedId) { const found = teachers.find(t => t.id === savedId); if (found) { currentTeacher = found; showTeacherDashboard(); } } }
-    function handleTeacherLogin() { const id = document.getElementById('login-id').value; const found = teachers.find(t => t.id === id); if (!found) return alert('존재하지 않는 선생님 아이디입니다.'); currentTeacher = found; safeSetSession(STORAGE_KEYS.CURRENT_TEACHER, id); showTeacherDashboard(); }
+    
+    function handleTeacherLogin() { 
+      const id = document.getElementById('login-id').value.trim(); 
+      const pw = document.getElementById('login-pw').value.trim();
+      
+      if(!id || !pw) return alert('아이디와 비밀번호를 모두 입력해주세요.');
+      
+      const found = teachers.find(t => t.id === id); 
+      if (!found) return alert('존재하지 않는 선생님 아이디입니다.'); 
+      if (found.password !== pw) return alert('비밀번호가 일치하지 않습니다.');
+      
+      currentTeacher = found; 
+      safeSetSession(STORAGE_KEYS.CURRENT_TEACHER, id); 
+      // 추가: 로그인 성공 시 비밀번호 입력칸을 비워줍니다.
+      document.getElementById('login-pw').value = '';
+      showTeacherDashboard(); 
+    }
     
     function showTeacherDashboard() { 
       setDisplay('teacher-login-box', 'none'); setDisplay('teacher-dashboard', 'block');
@@ -923,13 +940,14 @@
     function handleTeacherLogout() { 
       currentTeacher = null; try{ sessionStorage.removeItem(STORAGE_KEYS.CURRENT_TEACHER); }catch(e){} 
       setDisplay('teacher-dashboard', 'none'); setDisplay('teacher-login-box', 'block');
+      document.getElementById('login-pw').value = '';
     }
 
     function switchTeacherSubtab(tab) {
       ['submissions', 'student-view', 'problem', 'record'].forEach(t => {
         setDisplay(`teacher-subview-${t}`, t === tab ? (t === 'submissions' || t === 'student-view' ? 'grid' : 'block') : 'none');
         const btn = document.getElementById(`subtab-${t}`);
-        if(btn) btn.className = t === tab ? 'px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white' : 'px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border';
+        if(btn) btn.className = t === tab ? 'px-5 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white transition-colors' : 'px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border transition-colors';
       });
       if(tab === 'problem') loadTeacherProblemForm();
       if(tab === 'student-view') renderTeacherStudentList();
