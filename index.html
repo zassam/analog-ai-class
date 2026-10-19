@@ -249,8 +249,8 @@
           <h2 class="text-xl font-bold text-slate-900">개인 전용 관리실 로그인</h2>
         </div>
         <div class="space-y-4">
-          <!-- 변경 1. 기본 아이디를 almost_ajae로 미리 채워둡니다 -->
-          <div><label class="block text-xs font-bold mb-1">아이디</label><input type="text" id="login-id" value="almost_ajae" class="w-full rounded-xl border px-3.5 py-2.5 text-sm focus:border-indigo-500 outline-none"></div>
+          <!-- 변경 1. 기본 아이디를 zassam로 미리 채워둡니다 -->
+          <div><label class="block text-xs font-bold mb-1">아이디</label><input type="text" id="login-id" value="zassam" class="w-full rounded-xl border px-3.5 py-2.5 text-sm focus:border-indigo-500 outline-none"></div>
           <!-- 변경 2. 비밀번호 입력란을 비워두어 원하시는 비밀번호를 치고 들어갈 수 있게 합니다 -->
           <div><label class="block text-xs font-bold mb-1">비밀번호</label><input type="password" id="login-pw" placeholder="비밀번호 입력" class="w-full rounded-xl border px-3.5 py-2.5 text-sm focus:border-indigo-500 outline-none" onkeydown="if(event.key==='Enter') handleTeacherLogin()"></div>
           <button onclick="handleTeacherLogin()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition">로그인</button>
@@ -523,7 +523,7 @@
       try { const savedT = safeGetLocal(STORAGE_KEYS.TEACHERS); teachers = savedT ? JSON.parse(savedT) : null; } catch(e) { teachers = null; }
       
       // [변경 포인트] 선생님만의 개인 전용 아이디와 비밀번호를 이곳에서 직접 수정하실 수 있습니다.
-      if (!Array.isArray(teachers) || teachers.length === 0) teachers = [{ id: 'almost_ajae', name: '김경석 선생님', password: '0000' }];
+      if (!Array.isArray(teachers) || teachers.length === 0) teachers = [{ id: 'zassam', name: '김경석 선생님', password: '222510' }];
       
       try { const apiEl = document.getElementById('api-key-input'); if(apiEl) apiEl.value = safeGetLocal(STORAGE_KEYS.API_KEY) || ''; } catch(e) {}
     }
